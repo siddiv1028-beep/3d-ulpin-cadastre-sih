@@ -1,0 +1,26 @@
+property_id,name,city,state,state_code,dist_code,sub_dist_code,village_code,type,lat,lon,base_elevation,total_height,owner,status,valuation_cr,zone
+101,Seawoods Grand Central,Navi Mumbai,Maharashtra,27,21,101,50,Commercial,19.0216,73.0181,0.0,120.0,L&T Realty & Seawoods Corp,Verified 3D Cadastre,850.0,Commercial Core
+102,Grand Central Subsurface Concourse,Navi Mumbai,Maharashtra,27,21,101,50,Underground Parking,19.0216,73.0181,-15.0,15.0,CIDCO Urban Infra,Subsurface Title Active,180.0,Transit Subsurface
+103,Palm Beach Residency Pinnacle,Navi Mumbai,Maharashtra,27,21,101,52,Apartment,19.0245,73.0115,0.0,85.0,Palm Beach Residents Welfare,Verified 3D Cadastre,320.0,Residential High-Density
+104,Seawoods Urban Transit Terminal,Navi Mumbai,Maharashtra,27,21,101,51,Transit,19.018,73.019,0.0,35.0,Indian Railways / CIDCO,Public Utility Asset,420.0,Multimodal Hub
+105,BKC Diamond Tower,Mumbai,Maharashtra,27,22,104,12,Commercial,19.0657,72.8688,0.0,160.0,MMRDA & Global Diamond Bourse,Verified 3D Cadastre,2400.0,Special Financial Zone
+106,BKC Metro-3 Underground Vault,Mumbai,Maharashtra,27,22,104,12,Subsurface Utility,19.0665,72.8695,-24.0,24.0,MMRCL Underground Corridor,Critical Infrastructure,680.0,Subsurface Transit
+107,Worli Sea-Facing Super-Tower,Mumbai,Maharashtra,27,22,108,5,Apartment,19.0178,72.8172,0.0,240.0,Lodha Luxury Holdings,Verified 3D Cadastre,1850.0,Coastal Residential
+201,Connaught Outer Circle Tower,New Delhi,Delhi,7,1,101,10,Commercial,28.6328,77.2197,0.0,75.0,NDMC Heritage & Commercial,Heritage Buffer 3D,950.0,Central Business Dist
+202,Rajiv Chowk Subsurface Metro Terminal,New Delhi,Delhi,7,1,101,10,Subsurface Utility,28.6328,77.2197,-18.0,18.0,DMRC Underground Network,Subsurface Multi-Level,780.0,Transit Interchange
+203,Aerocity Horizon Gateway,New Delhi,Delhi,7,2,105,18,Commercial,28.5524,77.1215,0.0,65.0,DIAL Aerocity Developers,Verified 3D Cadastre,1400.0,Aviation Commercial
+204,Cyber City Epitome Horizon,Gurugram,Haryana,6,18,102,44,Commercial,28.4952,77.0895,0.0,140.0,DLF CyberCity Holdings,Verified 3D Cadastre,2100.0,IT & Cyber Park
+301,Manyata Embassy High-Tech Park,Bengaluru,Karnataka,29,20,201,15,Commercial,13.0489,77.62,0.0,110.0,Embassy REIT Infrastructure,Verified 3D Cadastre,1750.0,IT Corridor
+302,Cubbon Park Underground Metro Junction,Bengaluru,Karnataka,29,20,201,11,Subsurface Utility,12.9815,77.595,-21.0,21.0,BMRCL Namma Metro Underground,Critical Infrastructure,540.0,Transit Subsurface
+303,UB City Pinnacle Sky Suites,Bengaluru,Karnataka,29,20,201,8,Apartment,12.9719,77.5958,0.0,128.0,UBHL Luxury Living,Verified 3D Cadastre,1200.0,Commercial Mixed-Use
+304,Whitefield Tech Park Nexus,Bengaluru,Karnataka,29,20,203,32,Commercial,12.986,77.732,0.0,95.0,Prestige Estates Projects,Verified 3D Cadastre,920.0,Tech SEZ Zone
+401,GIFT Diamond Tower Pinnacle,GIFT City,Gujarat,24,7,101,1,Commercial,23.161,72.684,0.0,180.0,GIFT City Authority & FinTech SPV,Verified 3D Cadastre,2800.0,International FinTech SEZ
+402,GIFT Subsurface Utility Tunnel (TUM),GIFT City,Gujarat,24,7,101,1,Subsurface Utility,23.162,72.685,-16.0,16.0,GIFT Urban Infrastructure Ltd,Subsurface Automated Utility,890.0,Utility Corridors
+403,GIFT Aspire Smart Residential,GIFT City,Gujarat,24,7,101,3,Apartment,23.159,72.682,0.0,105.0,GIFT Housing Development,Verified 3D Cadastre,470.0,Smart Residential
+501,HITEC Cyber Towers Skyrise,Hyderabad,Telangana,36,12,101,2,Commercial,17.4504,78.3808,0.0,135.0,Telangana State Ind. Infra Corp,Verified 3D Cadastre,1600.0,Cyberabad Tech Zone
+502,Cyberabad Subsurface Data Vault,Hyderabad,Telangana,36,12,101,2,Subsurface Utility,17.449,78.3795,-20.0,20.0,National Cloud & Data Grid,High-Security Subsurface,620.0,Digital Infrastructure
+503,Durgam Cheruvu Mixed Urban Hub,Hyderabad,Telangana,36,12,102,14,Transit,17.433,78.387,0.0,45.0,Hyderabad Metro Rail & HMDA,Verified 3D Cadastre,390.0,Waterfront Commercial
+601,TIDEL Park IT Expressway Tower,Chennai,Tamil Nadu,33,2,104,21,Commercial,12.9892,80.2486,0.0,85.0,TIDEL Park Ltd (TIDCO),Verified 3D Cadastre,980.0,OMR IT Corridor
+602,Chennai Central Underground Transit Hub,Chennai,Tamil Nadu,33,2,101,5,Subsurface Utility,13.0827,80.2755,-22.0,22.0,CMRL Underground Metro,Subsurface Title Active,720.0,Transit Interchange
+701,New Town EcoSpace Tech Centre,Kolkata,West Bengal,19,11,103,19,Commercial,22.5855,88.468,0.0,92.0,Bengal Ambuja Housing Ltd,Verified 3D Cadastre,810.0,New Town IT Hub
+702,Hooghly Underwater Subsurface Corridor,Kolkata,West Bengal,19,11,101,1,Subsurface Utility,22.582,88.351,-32.0,32.0,KMRCL Underwater Metro,Underwater Engineering Marvel,1150.0,Sub-riverine Transit

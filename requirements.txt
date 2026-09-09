@@ -1,0 +1,6 @@
+streamlit
+pydeck
+pandas
+qrcode
+pillow
+reportlab
