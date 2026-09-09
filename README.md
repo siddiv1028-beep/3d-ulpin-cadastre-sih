@@ -1,7 +1,7 @@
 # 🏙️ Bhu-Aadhaar 3D: Pan-India 3D Cadastral System
 ### ISO 19152 Compliant Next-Generation 3D Spatial Cadastre, Subsurface Collision Engine & Vertical Land Registry Portal
 
-**Author / Lead:** Parijat Sharma  
+**Author / Lead:** Ctrl Alt Defeat 
 **Event:** Smart India Hackathon 2026 (SIH 2026)  
 **Tech Stack:** Python, Streamlit, PyDeck (Deck.gl), SQLite, ReportLab
 
