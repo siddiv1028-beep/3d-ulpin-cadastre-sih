@@ -181,16 +181,12 @@ with c_mode:
     )
 with c_thm:
     map_style_options = list(MAP_STYLES.keys())
-    # Smart default basemap based on active theme
-    default_basemap = "☀️ Minimalist Light" if current_theme == "light" else "🌌 Dark Matter (Default)"
-    if "basemap_aesthetic" not in st.session_state:
+    # Smart default basemap (Google Maps Official Style)
+    default_basemap = map_style_options[0]
+    if "basemap_aesthetic" not in st.session_state or st.session_state["basemap_aesthetic"] not in map_style_options:
         st.session_state["basemap_aesthetic"] = default_basemap
     
-    # Check if session state value is valid in options
-    if st.session_state["basemap_aesthetic"] in map_style_options:
-        default_index = map_style_options.index(st.session_state["basemap_aesthetic"])
-    else:
-        default_index = 0
+    default_index = map_style_options.index(st.session_state["basemap_aesthetic"])
 
     selected_theme = st.selectbox(
         "🗺️ Basemap Aesthetic:",
