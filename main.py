@@ -293,9 +293,23 @@ with col_panel:
 
     prop_data = df[df["property_id"] == selected_prop_id].iloc[0]
 
-    # Focus Camera Option (Auto-checked if searched directly)
-    focus_camera = st.checkbox("🎯 Lock 3D Camera to Selected Parcel", value=(searched_prop_id is not None))
-    custom_center = {"lat": prop_data["lat"], "lon": prop_data["lon"]} if focus_camera else None
+    # Focus Camera Option with quick Zoom-In trigger
+    c_fc1, c_fc2 = st.columns([1.6, 1.1])
+    with c_fc1:
+        focus_camera = st.checkbox(
+            "🎯 Lock 3D Camera to Parcel", 
+            value=(searched_prop_id is not None or st.session_state.get("fly_camera_active", False)),
+            key="cb_lock_cam"
+        )
+    with c_fc2:
+        if st.button("🚀 Zoom In 3D", use_container_width=True, help="Fly 3D camera directly to this building at street scale"):
+            st.session_state["fly_camera_active"] = True
+            st.rerun()
+
+    if not focus_camera and st.session_state.get("fly_camera_active", False):
+        st.session_state["fly_camera_active"] = False
+
+    custom_center = {"lat": float(prop_data["lat"]), "lon": float(prop_data["lon"])} if focus_camera else None
 
     # Render Dossier Card
     render_property_spec_card(prop_data, theme=current_theme)

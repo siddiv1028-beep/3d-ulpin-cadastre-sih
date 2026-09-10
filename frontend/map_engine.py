@@ -142,30 +142,35 @@ GMAPS_SURROUNDING_POIS = [
 
 # Standardized Municipal Geographic Viewports (Elevation scale is always 1.0 = 1:1 real meters)
 CITY_VIEWPORTS = {
-    "🇮🇳 Pan-India (National Cadastre)": {"lat": 22.5000, "lon": 79.5000, "zoom": 4.5, "pitch": 30, "bearing": 0},
-    "🇮🇳 Pan-India (Subcontinent)": {"lat": 22.5000, "lon": 79.5000, "zoom": 4.5, "pitch": 30, "bearing": 0},
+    "🇮🇳 Pan-India (National Cadastre)": {"lat": 21.2000, "lon": 79.2000, "zoom": 4.6, "pitch": 52, "bearing": -14},
+    "🇮🇳 Pan-India (Subcontinent)": {"lat": 21.2000, "lon": 79.2000, "zoom": 4.6, "pitch": 52, "bearing": -14},
     "Gurugram (NCR - Cyber City & Golf Course Corridor)": {"lat": 28.4952, "lon": 77.0895, "zoom": 15.8, "pitch": 62, "bearing": 30},
     "Navi Mumbai (MMR - Belapur & Seawoods TOD)": {"lat": 19.0216, "lon": 73.0181, "zoom": 15.8, "pitch": 62, "bearing": 32},
-    "Mumbai (MMR - Worli Sea Face & BKC Financial Centre)": {"lat": 19.0400, "lon": 72.8400, "zoom": 13.8, "pitch": 60, "bearing": 25},
+    "Mumbai (MMR - Worli Sea Face & BKC Financial Centre)": {"lat": 19.0400, "lon": 72.8400, "zoom": 14.2, "pitch": 60, "bearing": 25},
     "New Delhi (NCT - Lutyens & Central Business District)": {"lat": 28.6328, "lon": 77.2197, "zoom": 15.0, "pitch": 58, "bearing": 20},
-    "Bengaluru Urban (BBMP - IT Corridor, Whitefield & CBD)": {"lat": 12.9780, "lon": 77.6100, "zoom": 13.8, "pitch": 60, "bearing": 30},
+    "Bengaluru Urban (BBMP - IT Corridor, Whitefield & CBD)": {"lat": 12.9780, "lon": 77.6100, "zoom": 14.2, "pitch": 60, "bearing": 30},
     "GIFT City (Gandhinagar / Ahmedabad IFSC)": {"lat": 23.1610, "lon": 72.6840, "zoom": 16.0, "pitch": 64, "bearing": 40},
     "Hyderabad (GHMC - Cyberabad & HITEC City)": {"lat": 17.4480, "lon": 78.3800, "zoom": 14.8, "pitch": 60, "bearing": 30},
-    "Chennai (GCC - OMR IT Expressway & Central)": {"lat": 13.0200, "lon": 80.2600, "zoom": 14.0, "pitch": 58, "bearing": 20},
-    "Kolkata (KMC - New Town IT Hub & Underwater Metro)": {"lat": 22.5830, "lon": 88.4000, "zoom": 14.0, "pitch": 58, "bearing": 20},
+    "Chennai (GCC - OMR IT Expressway & Central)": {"lat": 13.0200, "lon": 80.2600, "zoom": 14.2, "pitch": 58, "bearing": 20},
+    "Kolkata (KMC - New Town IT Hub & Underwater Metro)": {"lat": 22.5830, "lon": 88.4000, "zoom": 14.2, "pitch": 58, "bearing": 20},
 }
 
-def compute_cadastral_polygon(lat, lon, length_m=80, width_m=60, archetype="default", heading_deg=25):
+def compute_cadastral_polygon(lat, lon, length_m=80, width_m=60, archetype="default", heading_deg=25, scale=1.0):
     """
     Computes authentic, true-to-scale geographic boundary coordinates for a 3D parcel footprint.
     Translates real-world dimensions (meters) into geographic lat/lon polygon vertices.
-    Guarantees that 3D buildings remain locked to real-world metric dimensions and never bloat on zoom.
+    Supports dynamic scale factor for Level-of-Detail (LOD) auto-resizing across zoom levels:
+    - High-altitude overview: scaled gracefully so 3D models are prominent on the globe.
+    - Street/neighborhood zoom: automatically resizes down to exact 1:1 physical meter plot boundaries.
     """
     m_per_deg_lat = 111320.0
     m_per_deg_lon = 111320.0 * math.cos(math.radians(lat))
     
-    hl = length_m / 2.0
-    hw = width_m / 2.0
+    eff_len = length_m * scale
+    eff_wid = width_m * scale
+    
+    hl = eff_len / 2.0
+    hw = eff_wid / 2.0
     
     rad = math.radians(heading_deg)
     cos_r = math.cos(rad)
@@ -287,44 +292,62 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (National Cadastre)", 
         lambda a: str(a).replace('_', ' ').title() if pd.notna(a) and str(a) != 'None' else 'Parametric Modern'
     ) if 'archetype' in map_df.columns else 'Parametric Modern'
 
-    # Generate authentic, real-world metric cadastral polygon coordinates for each parcel
-    def build_polygon_for_row(r):
+    # Precompute multi-scale Level-of-Detail (LOD) 3D building models for automatic zoom resizing
+    dim_map = {
+        101: (140, 85, 20),
+        102: (130, 75, 20),
+        103: (85, 60, 45),
+        104: (110, 45, 15),
+        105: (110, 95, 30),
+        106: (120, 35, 30),
+        107: (90, 72, 10),
+        201: (120, 120, 0),
+        202: (110, 80, 0),
+        203: (100, 70, 35),
+        204: (135, 60, 30),
+        301: (125, 75, 15),
+        302: (90, 35, 0),
+        303: (80, 65, 25),
+        304: (95, 60, 20),
+        401: (75, 75, 45),
+        402: (140, 30, 45),
+        403: (80, 60, 45),
+        501: (85, 85, 0),
+        502: (70, 50, 0),
+        503: (90, 45, 20),
+        601: (150, 55, 15),
+        602: (110, 35, 15),
+        701: (100, 70, 20),
+        702: (160, 30, 30)
+    }
+
+    def calc_lods(r):
         pid = int(r.get('property_id', 101))
         lat = float(r.get('lat', 19.0216))
         lon = float(r.get('lon', 73.0181))
         arc = str(r.get('archetype', 'default'))
-        
-        dim_map = {
-            101: (140, 85, 20),
-            102: (130, 75, 20),
-            103: (85, 60, 45),
-            104: (110, 45, 15),
-            105: (110, 95, 30),
-            106: (120, 35, 30),
-            107: (90, 72, 10),
-            201: (120, 120, 0),
-            202: (110, 80, 0),
-            203: (100, 70, 35),
-            204: (135, 60, 30),
-            301: (125, 75, 15),
-            302: (90, 35, 0),
-            303: (80, 65, 25),
-            304: (95, 60, 20),
-            401: (75, 75, 45),
-            402: (140, 30, 45),
-            403: (80, 60, 45),
-            501: (85, 85, 0),
-            502: (70, 50, 0),
-            503: (90, 45, 20),
-            601: (150, 55, 15),
-            602: (110, 35, 15),
-            701: (100, 70, 20),
-            702: (160, 30, 30)
-        }
         lm, wm, hd = dim_map.get(pid, (75, 55, 20))
-        return compute_cadastral_polygon(lat, lon, length_m=lm, width_m=wm, archetype=arc, heading_deg=hd)
+        h = abs(float(r.get('total_height', 60.0)))
 
-    map_df['polygon'] = map_df.apply(build_polygon_for_row, axis=1)
+        # Tier 1: Continental / National (Zoom 0 to 7.5) -> ~2,800m footprint, visible as a prominent 3D model
+        p1 = compute_cadastral_polygon(lat, lon, length_m=lm, width_m=wm, archetype=arc, heading_deg=hd, scale=32.0)
+        e1 = min(22000.0, max(12000.0, h * 110.0))
+
+        # Tier 2: Regional / State (Zoom 7.5 to 11.5) -> ~800m footprint, gracefully scaled for state view
+        p2 = compute_cadastral_polygon(lat, lon, length_m=lm, width_m=wm, archetype=arc, heading_deg=hd, scale=9.0)
+        e2 = min(5200.0, max(2200.0, h * 24.0))
+
+        # Tier 3: Metro / District (Zoom 11.5 to 14.5) -> ~250m footprint, fitting within city blocks
+        p3 = compute_cadastral_polygon(lat, lon, length_m=lm, width_m=wm, archetype=arc, heading_deg=hd, scale=2.8)
+        e3 = min(1400.0, max(450.0, h * 5.5))
+
+        # Tier 4: True 1:1 Metric Cadastral Footprint (Zoom 14.5 to 24) -> exact real meters (elevation_scale=1.0)
+        p4 = compute_cadastral_polygon(lat, lon, length_m=lm, width_m=wm, archetype=arc, heading_deg=hd, scale=1.0)
+        e4 = h
+
+        return pd.Series([p1, e1, p2, e2, p3, e3, p4, e4])
+
+    map_df[['polygon_lod1', 'elev_lod1', 'polygon_lod2', 'elev_lod2', 'polygon_lod3', 'elev_lod3', 'polygon_lod4', 'elev_lod4']] = map_df.apply(calc_lods, axis=1)
 
     # Determine camera view state
     pan_india_default = CITY_VIEWPORTS.get("🇮🇳 Pan-India (National Cadastre)") or list(CITY_VIEWPORTS.values())[0]
@@ -351,57 +374,121 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (National Cadastre)", 
         bearing=bearing
     )
 
-    # Level of Detail (LOD) check:
-    # If viewing Pan-India from high altitude without focusing on a property, we show clean Google Maps pins.
-    # When focused on a city or parcel, we render the 1:1 true metric 3D building polygons!
-    is_national_overview = (selected_region.startswith("🇮🇳") or "Pan-India" in selected_region) and (custom_center is None)
-    is_city_view = not is_national_overview
-
     layers = []
 
-    # 1. Main 3D Cadastral Building Extrusion Layer (PolygonLayer at 1:1 Metric Scale)
-    # ONLY rendered at city/neighborhood zoom level. Never bloats across cities!
-    if is_city_view:
-        polygon_layer = pdk.Layer(
-            'PolygonLayer',
-            id='cadastre-3d-polygons',
-            data=map_df,
-            get_polygon='polygon',
-            get_elevation='total_height',
-            elevation_scale=1.0,  # Strict 1:1 Real-world metric scale!
-            filled=True,
-            extruded=True,
-            wireframe=True,
-            get_fill_color='color',
-            get_line_color=[255, 255, 255, 200],
-            line_width_min_pixels=1.5,
-            pickable=True,
-            auto_highlight=True,
-        )
-        layers.append(polygon_layer)
+    # -------------------------------------------------------------
+    # 3D ARCHITECTURAL LAYERS WITH AUTOMATIC ZOOM RESIZING (LOD 1 to 4)
+    # -------------------------------------------------------------
 
-    # 2. Google Maps High-Contrast Cadastral Pin Markers (Pixel-Scaled)
-    # Visible across continent zoom down to street zoom without geographic bloating
+    # LOD 1: Continental 3D Architectural Model (Visible at Zoom 0 to 7.5)
+    # Renders prominent 3D extruded towers visible from space across India in 3D perspective
+    layer_lod1 = pdk.Layer(
+        'PolygonLayer',
+        id='cadastre-3d-continental',
+        data=map_df,
+        get_polygon='polygon_lod1',
+        get_elevation='elev_lod1',
+        elevation_scale=1.0,
+        filled=True,
+        extruded=True,
+        wireframe=True,
+        get_fill_color='color',
+        get_line_color=[255, 255, 255, 255],
+        line_width_min_pixels=2.0,
+        min_zoom=0,
+        max_zoom=7.5,
+        pickable=True,
+        auto_highlight=True,
+    )
+    layers.append(layer_lod1)
+
+    # LOD 2: Regional 3D Architectural Model (Visible at Zoom 7.5 to 11.5)
+    # Automatically scales down by >3.5x as user zooms into state/regional scale
+    layer_lod2 = pdk.Layer(
+        'PolygonLayer',
+        id='cadastre-3d-regional',
+        data=map_df,
+        get_polygon='polygon_lod2',
+        get_elevation='elev_lod2',
+        elevation_scale=1.0,
+        filled=True,
+        extruded=True,
+        wireframe=True,
+        get_fill_color='color',
+        get_line_color=[255, 255, 255, 240],
+        line_width_min_pixels=1.8,
+        min_zoom=7.5,
+        max_zoom=11.5,
+        pickable=True,
+        auto_highlight=True,
+    )
+    layers.append(layer_lod2)
+
+    # LOD 3: Metro District 3D Architectural Model (Visible at Zoom 11.5 to 14.5)
+    # Automatically scales down to city block size as user enters metropolitan area
+    layer_lod3 = pdk.Layer(
+        'PolygonLayer',
+        id='cadastre-3d-metro',
+        data=map_df,
+        get_polygon='polygon_lod3',
+        get_elevation='elev_lod3',
+        elevation_scale=1.0,
+        filled=True,
+        extruded=True,
+        wireframe=True,
+        get_fill_color='color',
+        get_line_color=[255, 255, 255, 220],
+        line_width_min_pixels=1.5,
+        min_zoom=11.5,
+        max_zoom=14.5,
+        pickable=True,
+        auto_highlight=True,
+    )
+    layers.append(layer_lod3)
+
+    # LOD 4: Street / Cadastral True 1:1 Metric 3D Architectural Model (Visible at Zoom 14.5 to 24)
+    # Strict 1:1 real-world metric scale! Locked to the exact physical parcel without city overlap!
+    layer_lod4 = pdk.Layer(
+        'PolygonLayer',
+        id='cadastre-3d-true-metric',
+        data=map_df,
+        get_polygon='polygon_lod4',
+        get_elevation='elev_lod4',
+        elevation_scale=1.0,
+        filled=True,
+        extruded=True,
+        wireframe=True,
+        get_fill_color='color',
+        get_line_color=[255, 255, 255, 200],
+        line_width_min_pixels=1.5,
+        min_zoom=14.5,
+        max_zoom=24,
+        pickable=True,
+        auto_highlight=True,
+    )
+    layers.append(layer_lod4)
+
+    # 5. Glowing Circular Cadastral Foundation Anchor Pin (Pixel-Scaled)
     pin_layer = pdk.Layer(
         'ScatterplotLayer',
         id='cadastre-gmaps-pins',
         data=map_df,
         get_position='[lon, lat]',
-        get_radius=18,
-        radius_min_pixels=6,
-        radius_max_pixels=10,
+        get_radius=20,
+        radius_min_pixels=3,
+        radius_max_pixels=6,
         get_fill_color='color',
         get_line_color=[255, 255, 255, 255],
-        line_width_min_pixels=2,
+        line_width_min_pixels=1.5,
         stroked=True,
         filled=True,
         pickable=True
     )
     layers.append(pin_layer)
 
-    # 3. Google Maps Style Text Labels for Cadastral Parcels
-    # Render ONLY at city level, and without background=True so NO hollow rectangle artifacts appear!
-    if show_labels and is_city_view:
+    # 6. Google Maps Style Text Labels for Cadastral Parcels
+    # Appears at zoom >= 10.0 so national view is clear, and without background=True so NO hollow rectangle artifacts!
+    if show_labels:
         parcel_text_layer = pdk.Layer(
             'TextLayer',
             id='gmaps-parcel-labels',
@@ -412,15 +499,17 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (National Cadastre)", 
             get_size=12,
             get_alignment_baseline='bottom',
             get_text_anchor='middle',
-            get_pixel_offset=[0, -22],
+            get_pixel_offset=[0, -26],
             background=False,  # NO HOLLOW RECTANGLES!
             font_family="'Inter', 'Segoe UI', Roboto, sans-serif",
             font_weight=700,
+            min_zoom=10.0,
+            max_zoom=24,
             pickable=True
         )
         layers.append(parcel_text_layer)
 
-        # 4. Surrounding Real-World Google Maps Points of Interest (POIs)
+        # 7. Surrounding Real-World Google Maps Points of Interest (POIs) at City Zoom
         city_toks = ["Gurugram", "Navi Mumbai", "Mumbai", "New Delhi", "Bengaluru", "GIFT City", "Hyderabad", "Chennai", "Kolkata"]
         matched_tok = next((tok for tok in city_toks if tok.lower() in selected_region.lower()), selected_region)
         matched_pois = [p for p in GMAPS_SURROUNDING_POIS if p['city'].lower() in matched_tok.lower() or matched_tok.lower() in p['city'].lower()]
@@ -437,13 +526,15 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (National Cadastre)", 
                 data=poi_df,
                 get_position=['lon', 'lat'],
                 get_radius=15,
-                radius_min_pixels=4,
-                radius_max_pixels=8,
+                radius_min_pixels=3,
+                radius_max_pixels=6,
                 get_fill_color='color',
                 get_line_color=[255, 255, 255, 240],
                 line_width_min_pixels=1.5,
                 stroked=True,
                 filled=True,
+                min_zoom=12.5,
+                max_zoom=24,
                 pickable=True
             )
             layers.append(poi_pin_layer)
@@ -462,6 +553,8 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (National Cadastre)", 
                 background=False,  # NO HOLLOW RECTANGLES!
                 font_family="'Inter', 'Segoe UI', Roboto, sans-serif",
                 font_weight=600,
+                min_zoom=12.5,
+                max_zoom=24,
                 pickable=True
             )
             layers.append(poi_text_layer)
