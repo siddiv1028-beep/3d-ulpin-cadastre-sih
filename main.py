@@ -228,7 +228,7 @@ else:
 
 with col_map:
     # Filter Bar directly above map
-    f1, f2, f3 = st.columns([2.2, 1.2, 0.8])
+    f1, f2, f3, f4 = st.columns([1.8, 1.1, 1.1, 0.6])
     with f1:
         all_types = sorted(df['type'].unique().tolist())
         selected_types = st.multiselect(
@@ -238,11 +238,13 @@ with col_map:
             label_visibility="collapsed"
         )
     with f2:
-        show_underground = st.toggle("Subsurface Infrastructure", value=True)
+        show_underground = st.toggle("Subsurface", value=True)
     with f3:
+        show_gmaps_labels = st.toggle("🏷️ GMaps Names", value=True, help="Display Google Maps landmark names & POIs")
+    with f4:
         active_count_color = "#64748b" if current_theme == "light" else "#94a3b8"
         st.markdown(
-            f"<div style='text-align: right; padding-top: 6px; font-size: 0.8rem; color: {active_count_color}; font-weight: 600; font-family: monospace;'>Active: {len(display_df)}</div>",
+            f"<div style='text-align: right; padding-top: 6px; font-size: 0.8rem; color: {active_count_color}; font-weight: 600; font-family: monospace;'>{len(display_df)} Active</div>",
             unsafe_allow_html=True
         )
 
@@ -682,7 +684,8 @@ with col_map:
             filtered_map_df,
             selected_region=selected_region,
             custom_center=custom_center,
-            map_theme=selected_theme
+            map_theme=selected_theme,
+            show_labels=show_gmaps_labels
         )
         map_placeholder.pydeck_chart(deck, use_container_width=True)
 
