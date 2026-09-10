@@ -124,20 +124,31 @@ def generate_bhu_aadhaar_pdf(prop, floor_dict, ulpin_str):
 
     # 2. Cryptographic Security Hash & QR Data
     z_range_str = f"{floor_dict['z_start']}m to {floor_dict['z_end']}m"
+    effective_owner = floor_dict.get('owner') or prop.get('owner', 'Government Cadastral Registry')
+    prop_lat = float(prop.get('lat', 0.0))
+    prop_lon = float(prop.get('lon', 0.0))
+    prop_val = float(prop.get('valuation_cr', 0.0))
+    prop_plot = int(prop.get('property_id') or prop.get('id', 0))
+    prop_name = str(prop.get('name', 'Urban Complex'))
+    prop_city = str(prop.get('city', 'National Jurisdiction'))
+    prop_state = str(prop.get('state', 'India'))
+    prop_state_code = str(prop.get('state_code', '00'))
+    prop_base_elev = str(prop.get('base_elevation', '0.0'))
+
     sha_hash = generate_title_hash(
         ulpin_str,
-        prop['owner'],
-        prop['lat'],
-        prop['lon'],
+        effective_owner,
+        prop_lat,
+        prop_lon,
         z_range_str,
-        prop.get('valuation_cr', 0)
+        prop_val
     )
 
     qr_payload = {
         "portal": "https://dilrmp.gov.in/bhu-aadhaar-3d",
         "3d_ulpin": ulpin_str,
-        "owner": prop['owner'],
-        "plot": int(prop['property_id']),
+        "owner": effective_owner,
+        "plot": prop_plot,
         "level": floor_dict['floor_number'],
         "z_range": z_range_str,
         "hash_sig": sha_hash[:16]
@@ -147,11 +158,12 @@ def generate_bhu_aadhaar_pdf(prop, floor_dict, ulpin_str):
 
     # 3. Main Certificate Data Table
     floor_num = floor_dict['floor_number']
+    custom_name = floor_dict.get('floor_name')
     if floor_num < 0:
-        level_name = f"Basement {abs(floor_num):02d} (Subsurface Infrastructure)"
+        level_name = custom_name if custom_name else f"Basement {abs(floor_num):02d} (Subsurface Infrastructure)"
         tenure_type = "Subsurface Air/Ground Easement Right"
     else:
-        level_name = f"Floor {floor_num:02d} (Superstructure)"
+        level_name = custom_name if custom_name else f"Floor {floor_num:02d} (Superstructure)"
         tenure_type = "Freehold Vertical Airspace Title"
 
     table_data = [
@@ -162,22 +174,22 @@ def generate_bhu_aadhaar_pdf(prop, floor_dict, ulpin_str):
         ],
         [
             Paragraph("Registered Title Holder:", label_style),
-            Paragraph(f"<b>{prop['owner']}</b>", val_style),
+            Paragraph(f"<b>{effective_owner}</b>", val_style),
             ""
         ],
         [
             Paragraph("Property / Complex:", label_style),
-            Paragraph(f"{prop['name']}", val_style),
+            Paragraph(f"{prop_name}", val_style),
             ""
         ],
         [
             Paragraph("Jurisdiction & State:", label_style),
-            Paragraph(f"{prop['city']}, {prop['state']} (LGD: {prop['state_code']})", val_style),
+            Paragraph(f"{prop_city}, {prop_state} (LGD: {prop_state_code})", val_style),
             ""
         ],
         [
             Paragraph("Cadastral Plot Ref:", label_style),
-            Paragraph(f"Survey Plot #{prop['property_id']} &bull; Zone: {prop.get('zone', 'Urban Commercial')}", val_style),
+            Paragraph(f"Survey Plot #{prop_plot} &bull; Zone: {prop.get('zone', 'Urban Commercial')}", val_style),
             ""
         ],
         [
@@ -187,7 +199,7 @@ def generate_bhu_aadhaar_pdf(prop, floor_dict, ulpin_str):
         ],
         [
             Paragraph("Absolute Elevation (Z):", label_style),
-            Paragraph(f"<b>{z_range_str}</b> (Base Ground: {prop['base_elevation']}m)", val_style),
+            Paragraph(f"<b>{z_range_str}</b> (Base Ground: {prop_base_elev}m)", val_style),
             ""
         ],
         [

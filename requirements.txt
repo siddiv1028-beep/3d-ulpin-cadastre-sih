@@ -4,3 +4,4 @@ pandas
 qrcode
 pillow
 reportlab
+pydantic>=2.0.0

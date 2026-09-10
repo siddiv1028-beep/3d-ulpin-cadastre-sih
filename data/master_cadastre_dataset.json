@@ -1,0 +1,1400 @@
+{
+  "system_metadata": {
+    "project": "Bhu-Aadhaar 3D (3D ULPIN Cadastre)",
+    "standards": [
+      "ISO 19152 LADM Edition II",
+      "National CORS Network (Survey of India)",
+      "Digital India Land Records Modernization Programme (DILRMP)"
+    ],
+    "total_properties": 25,
+    "unique_archetypes": 20,
+    "total_valuation_inr_cr": 26770.0
+  },
+  "parcels": [
+    {
+      "property_id": 101,
+      "name": "Seawoods Grand Central TOD",
+      "city": "Navi Mumbai",
+      "state": "Maharashtra",
+      "state_code": 27,
+      "dist_code": 21,
+      "sub_dist_code": 101,
+      "village_code": 50,
+      "type": "Commercial",
+      "lat": 19.0216,
+      "lon": 73.0181,
+      "base_elevation": 0.0,
+      "total_height": 120.0,
+      "owner": "L&T Realty & Seawoods Corp",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 850.0,
+      "zone": "Navi Mumbai (MMR / CIDCO Seawoods TOD)",
+      "archetype": "transit_quad_podium",
+      "facade_theme": "azure_glass",
+      "roof_feature": "helipad_skywalk",
+      "subsurface_infra": "metro_rail_transit"
+    },
+    {
+      "property_id": 102,
+      "name": "Grand Central Subsurface Concourse",
+      "city": "Navi Mumbai",
+      "state": "Maharashtra",
+      "state_code": 27,
+      "dist_code": 21,
+      "sub_dist_code": 101,
+      "village_code": 50,
+      "type": "Underground Parking",
+      "lat": 19.0216,
+      "lon": 73.0181,
+      "base_elevation": -15.0,
+      "total_height": 15.0,
+      "owner": "CIDCO Urban Infrastructure Authority",
+      "status": "Subsurface Title Active",
+      "valuation_cr": 180.0,
+      "zone": "Navi Mumbai (MMR / CIDCO Urban Infra)",
+      "archetype": "subterranean_multilevel_cavern",
+      "facade_theme": "concrete_vault",
+      "roof_feature": "street_plaza",
+      "subsurface_infra": "multi_tier_parking"
+    },
+    {
+      "property_id": 103,
+      "name": "Palm Beach Residency Pinnacle",
+      "city": "Navi Mumbai",
+      "state": "Maharashtra",
+      "state_code": 27,
+      "dist_code": 21,
+      "sub_dist_code": 101,
+      "village_code": 52,
+      "type": "Apartment",
+      "lat": 19.0245,
+      "lon": 73.0115,
+      "base_elevation": 0.0,
+      "total_height": 85.0,
+      "owner": "Palm Beach Residents Welfare Association",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 320.0,
+      "zone": "Navi Mumbai (MMR / Palm Beach Corridor)",
+      "archetype": "coastal_residential_tower",
+      "facade_theme": "emerald_terrace",
+      "roof_feature": "sky_garden",
+      "subsurface_infra": "basement_parking"
+    },
+    {
+      "property_id": 104,
+      "name": "Seawoods Urban Transit Terminal",
+      "city": "Navi Mumbai",
+      "state": "Maharashtra",
+      "state_code": 27,
+      "dist_code": 21,
+      "sub_dist_code": 101,
+      "village_code": 51,
+      "type": "Transit",
+      "lat": 19.018,
+      "lon": 73.019,
+      "base_elevation": 0.0,
+      "total_height": 35.0,
+      "owner": "Central Railway / CIDCO",
+      "status": "Public Utility Asset",
+      "valuation_cr": 420.0,
+      "zone": "Navi Mumbai (MMR / Central Railway Node)",
+      "archetype": "transit_canopy_terminal",
+      "facade_theme": "aerodynamic_mesh",
+      "roof_feature": "tensile_canopy",
+      "subsurface_infra": "underground_pedestrian_concourse"
+    },
+    {
+      "property_id": 105,
+      "name": "BKC Diamond Tower",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "state_code": 27,
+      "dist_code": 22,
+      "sub_dist_code": 104,
+      "village_code": 12,
+      "type": "Commercial",
+      "lat": 19.0657,
+      "lon": 72.8688,
+      "base_elevation": 0.0,
+      "total_height": 160.0,
+      "owner": "MMRDA & Bharat Diamond Bourse",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 2400.0,
+      "zone": "Mumbai (MMR / MMRDA BKC Financial Dist)",
+      "archetype": "crystalline_diamond",
+      "facade_theme": "diamond_crystal_blue",
+      "roof_feature": "observation_crown",
+      "subsurface_infra": "bkc_metro3_vault"
+    },
+    {
+      "property_id": 106,
+      "name": "BKC Metro-3 Underground Vault",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "state_code": 27,
+      "dist_code": 22,
+      "sub_dist_code": 104,
+      "village_code": 12,
+      "type": "Subsurface Utility",
+      "lat": 19.0665,
+      "lon": 72.8695,
+      "base_elevation": -24.0,
+      "total_height": 24.0,
+      "owner": "MMRCL Underground Metro Corridor",
+      "status": "Critical Infrastructure",
+      "valuation_cr": 680.0,
+      "zone": "Mumbai (MMR / MMRCL Metro-3 Colaba-SEEPZ)",
+      "archetype": "subterranean_multilevel_cavern",
+      "facade_theme": "subterranean_granite",
+      "roof_feature": "surface_roadway",
+      "subsurface_infra": "metro3_double_bore"
+    },
+    {
+      "property_id": 107,
+      "name": "Lodha World One (Worli Sea Face)",
+      "city": "Mumbai",
+      "state": "Maharashtra",
+      "state_code": 27,
+      "dist_code": 22,
+      "sub_dist_code": 108,
+      "village_code": 5,
+      "type": "Apartment",
+      "lat": 19.0178,
+      "lon": 72.8172,
+      "base_elevation": 0.0,
+      "total_height": 240.0,
+      "owner": "Lodha Luxury Holdings & World One SPV",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 1850.0,
+      "zone": "Mumbai (MMR / BMC Worli Sea Face)",
+      "archetype": "supertall_tiered",
+      "facade_theme": "champagne_gold_glass",
+      "roof_feature": "illuminated_crown_spire",
+      "subsurface_infra": "four_tier_valet_vault"
+    },
+    {
+      "property_id": 201,
+      "name": "Connaught Outer Circle Heritage Colonnade",
+      "city": "New Delhi",
+      "state": "Delhi",
+      "state_code": 7,
+      "dist_code": 1,
+      "sub_dist_code": 101,
+      "village_code": 10,
+      "type": "Commercial",
+      "lat": 28.6328,
+      "lon": 77.2197,
+      "base_elevation": 0.0,
+      "total_height": 75.0,
+      "owner": "New Delhi Municipal Council (NDMC)",
+      "status": "Heritage Buffer 3D",
+      "valuation_cr": 950.0,
+      "zone": "New Delhi (NCT / NDMC Connaught Place)",
+      "archetype": "circular_heritage_rotunda",
+      "facade_theme": "terracotta_sandstone",
+      "roof_feature": "rotunda_dome",
+      "subsurface_infra": "subterranean_utility_link"
+    },
+    {
+      "property_id": 202,
+      "name": "Rajiv Chowk Subsurface Metro Terminal",
+      "city": "New Delhi",
+      "state": "Delhi",
+      "state_code": 7,
+      "dist_code": 1,
+      "sub_dist_code": 101,
+      "village_code": 10,
+      "type": "Subsurface Utility",
+      "lat": 28.6328,
+      "lon": 77.2197,
+      "base_elevation": -18.0,
+      "total_height": 18.0,
+      "owner": "Delhi Metro Rail Corp (DMRC)",
+      "status": "Subsurface Multi-Level",
+      "valuation_cr": 780.0,
+      "zone": "New Delhi (NCT / DMRC Rajiv Chowk Hub)",
+      "archetype": "subterranean_multilevel_cavern",
+      "facade_theme": "granite_concourse",
+      "roof_feature": "central_park_rotunda",
+      "subsurface_infra": "dual_level_metro_interchange"
+    },
+    {
+      "property_id": 203,
+      "name": "Aerocity Horizon Gateway",
+      "city": "New Delhi",
+      "state": "Delhi",
+      "state_code": 7,
+      "dist_code": 2,
+      "sub_dist_code": 105,
+      "village_code": 18,
+      "type": "Commercial",
+      "lat": 28.5524,
+      "lon": 77.1215,
+      "base_elevation": 0.0,
+      "total_height": 65.0,
+      "owner": "Delhi International Airport Ltd (DIAL)",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 1400.0,
+      "zone": "New Delhi (NCT / DIAL Aerocity Gateway)",
+      "archetype": "aerocity_curvilinear_atrium",
+      "facade_theme": "silver_metallic_louver",
+      "roof_feature": "aviation_beacons",
+      "subsurface_infra": "airport_express_link"
+    },
+    {
+      "property_id": 204,
+      "name": "DLF Cyber City Building 10 (The Epitome)",
+      "city": "Gurugram",
+      "state": "Haryana",
+      "state_code": 6,
+      "dist_code": 18,
+      "sub_dist_code": 102,
+      "village_code": 44,
+      "type": "Commercial",
+      "lat": 28.4952,
+      "lon": 77.0895,
+      "base_elevation": 0.0,
+      "total_height": 140.0,
+      "owner": "DLF CyberCity Holdings & Co-Tenants",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 2100.0,
+      "zone": "Gurugram (NCR / MCG Cyber City Zone)",
+      "archetype": "skybridge_twin",
+      "facade_theme": "cyber_steel_blue",
+      "roof_feature": "telecom_masts",
+      "subsurface_infra": "rapid_metro_viaduct"
+    },
+    {
+      "property_id": 301,
+      "name": "Manyata Embassy High-Tech Park",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "state_code": 29,
+      "dist_code": 20,
+      "sub_dist_code": 201,
+      "village_code": 15,
+      "type": "Commercial",
+      "lat": 13.0489,
+      "lon": 77.62,
+      "base_elevation": 0.0,
+      "total_height": 110.0,
+      "owner": "Embassy REIT Infrastructure",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 1750.0,
+      "zone": "Bengaluru Urban (BBMP / Hebbal IT Corridor)",
+      "archetype": "tech_park_interconnected_blocks",
+      "facade_theme": "forest_green_solar",
+      "roof_feature": "solar_pv_canopy",
+      "subsurface_infra": "data_infrastructure_vault"
+    },
+    {
+      "property_id": 302,
+      "name": "Cubbon Park Underground Metro Junction",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "state_code": 29,
+      "dist_code": 20,
+      "sub_dist_code": 201,
+      "village_code": 11,
+      "type": "Subsurface Utility",
+      "lat": 12.9815,
+      "lon": 77.595,
+      "base_elevation": -21.0,
+      "total_height": 21.0,
+      "owner": "BMRCL Namma Metro Underground",
+      "status": "Critical Infrastructure",
+      "valuation_cr": 540.0,
+      "zone": "Bengaluru Urban (BBMP / BMRCL Central Junction)",
+      "archetype": "subterranean_multilevel_cavern",
+      "facade_theme": "heritage_stone_portal",
+      "roof_feature": "botanical_ground",
+      "subsurface_infra": "deep_shield_tunnel"
+    },
+    {
+      "property_id": 303,
+      "name": "UB City & Kingfisher Towers",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "state_code": 29,
+      "dist_code": 20,
+      "sub_dist_code": 201,
+      "village_code": 8,
+      "type": "Apartment",
+      "lat": 12.9719,
+      "lon": 77.5958,
+      "base_elevation": 0.0,
+      "total_height": 128.0,
+      "owner": "UBHL & Prestige Luxury Living",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 1200.0,
+      "zone": "Bengaluru Urban (BBMP / CBD Vittal Mallya Road)",
+      "archetype": "stepped_spire_luxury",
+      "facade_theme": "emerald_classical_glass",
+      "roof_feature": "soaring_gilded_spire",
+      "subsurface_infra": "luxury_concierge_parking"
+    },
+    {
+      "property_id": 304,
+      "name": "Whitefield Tech Park Nexus",
+      "city": "Bengaluru",
+      "state": "Karnataka",
+      "state_code": 29,
+      "dist_code": 20,
+      "sub_dist_code": 203,
+      "village_code": 32,
+      "type": "Commercial",
+      "lat": 12.986,
+      "lon": 77.732,
+      "base_elevation": 0.0,
+      "total_height": 95.0,
+      "owner": "Prestige Estates Projects",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 920.0,
+      "zone": "Bengaluru Urban (BBMP / Whitefield IT Corridor)",
+      "archetype": "geometric_modular_tech",
+      "facade_theme": "cobalt_modular_grid",
+      "roof_feature": "chill_plant_deck",
+      "subsurface_infra": "fiber_optic_vault"
+    },
+    {
+      "property_id": 401,
+      "name": "GIFT Diamond Tower Pinnacle",
+      "city": "GIFT City",
+      "state": "Gujarat",
+      "state_code": 24,
+      "dist_code": 7,
+      "sub_dist_code": 101,
+      "village_code": 1,
+      "type": "Commercial",
+      "lat": 23.161,
+      "lon": 72.684,
+      "base_elevation": 0.0,
+      "total_height": 180.0,
+      "owner": "GIFT City Authority & FinTech SPV",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 2800.0,
+      "zone": "GIFT City (Gandhinagar / IFSCA Special SEZ)",
+      "archetype": "crystalline_diamond",
+      "facade_theme": "fintech_cyan_facets",
+      "roof_feature": "helipad_sky_lounge",
+      "subsurface_infra": "gift_tum_tunnel"
+    },
+    {
+      "property_id": 402,
+      "name": "GIFT Subsurface Utility Tunnel (TUM)",
+      "city": "GIFT City",
+      "state": "Gujarat",
+      "state_code": 24,
+      "dist_code": 7,
+      "sub_dist_code": 101,
+      "village_code": 1,
+      "type": "Subsurface Utility",
+      "lat": 23.162,
+      "lon": 72.685,
+      "base_elevation": -16.0,
+      "total_height": 16.0,
+      "owner": "GIFT Urban Infrastructure Ltd",
+      "status": "Subsurface Automated Utility",
+      "valuation_cr": 890.0,
+      "zone": "GIFT City (Gandhinagar / Automated TUM Trench)",
+      "archetype": "utility_tunnel_trench",
+      "facade_theme": "industrial_concrete",
+      "roof_feature": "smart_boulevard",
+      "subsurface_infra": "cooling_waste_power_trays"
+    },
+    {
+      "property_id": 403,
+      "name": "GIFT Aspire Smart Residential",
+      "city": "GIFT City",
+      "state": "Gujarat",
+      "state_code": 24,
+      "dist_code": 7,
+      "sub_dist_code": 101,
+      "village_code": 3,
+      "type": "Apartment",
+      "lat": 23.159,
+      "lon": 72.682,
+      "base_elevation": 0.0,
+      "total_height": 105.0,
+      "owner": "GIFT Housing Development Authority",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 470.0,
+      "zone": "GIFT City (Gandhinagar / Smart Residential Enclave)",
+      "archetype": "smart_modular_residential",
+      "facade_theme": "biophilic_green_facade",
+      "roof_feature": "rooftop_hydroponics",
+      "subsurface_infra": "automated_car_stacker"
+    },
+    {
+      "property_id": 501,
+      "name": "HITEC Cyber Towers (Cyberabad)",
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "state_code": 36,
+      "dist_code": 12,
+      "sub_dist_code": 101,
+      "village_code": 2,
+      "type": "Commercial",
+      "lat": 17.4504,
+      "lon": 78.3808,
+      "base_elevation": 0.0,
+      "total_height": 135.0,
+      "owner": "Telangana State Ind. Infra Corp (TSIIC)",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 1600.0,
+      "zone": "Hyderabad (GHMC / Cyberabad HITEC City)",
+      "archetype": "cyber_cylindrical_radial",
+      "facade_theme": "hyderabad_granite_azure",
+      "roof_feature": "central_helipad_h",
+      "subsurface_infra": "data_grid_bunker"
+    },
+    {
+      "property_id": 502,
+      "name": "Cyberabad Subsurface Data Vault",
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "state_code": 36,
+      "dist_code": 12,
+      "sub_dist_code": 101,
+      "village_code": 2,
+      "type": "Subsurface Utility",
+      "lat": 17.449,
+      "lon": 78.3795,
+      "base_elevation": -20.0,
+      "total_height": 20.0,
+      "owner": "National Cloud & Data Grid SPV",
+      "status": "High-Security Subsurface",
+      "valuation_cr": 620.0,
+      "zone": "Hyderabad (GHMC / Cyberabad Data Infrastructure)",
+      "archetype": "subterranean_bunker_vault",
+      "facade_theme": "blast_reinforced_walls",
+      "roof_feature": "surface_substation",
+      "subsurface_infra": "tier4_server_chambers"
+    },
+    {
+      "property_id": 503,
+      "name": "Durgam Cheruvu Mixed Urban Hub",
+      "city": "Hyderabad",
+      "state": "Telangana",
+      "state_code": 36,
+      "dist_code": 12,
+      "sub_dist_code": 102,
+      "village_code": 14,
+      "type": "Transit",
+      "lat": 17.433,
+      "lon": 78.387,
+      "base_elevation": 0.0,
+      "total_height": 45.0,
+      "owner": "Hyderabad Metro Rail & HMDA",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 390.0,
+      "zone": "Hyderabad (GHMC / HMDA Durgam Cheruvu Hub)",
+      "archetype": "cable_stayed_transit_hub",
+      "facade_theme": "cable_stay_composite",
+      "roof_feature": "cable_pylons",
+      "subsurface_infra": "cable_anchorage_vault"
+    },
+    {
+      "property_id": 601,
+      "name": "TIDEL Park (OMR IT Expressway)",
+      "city": "Chennai",
+      "state": "Tamil Nadu",
+      "state_code": 33,
+      "dist_code": 2,
+      "sub_dist_code": 104,
+      "village_code": 21,
+      "type": "Commercial",
+      "lat": 12.9892,
+      "lon": 80.2486,
+      "base_elevation": 0.0,
+      "total_height": 85.0,
+      "owner": "TIDEL Park Ltd (TIDCO)",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 980.0,
+      "zone": "Chennai (GCC / OMR IT Expressway Corridor)",
+      "archetype": "it_linear_spine",
+      "facade_theme": "monolithic_slate_glass",
+      "roof_feature": "long_span_cooling_rigs",
+      "subsurface_infra": "expressway_storm_reservoir"
+    },
+    {
+      "property_id": 602,
+      "name": "Chennai Central Underground Transit Hub",
+      "city": "Chennai",
+      "state": "Tamil Nadu",
+      "state_code": 33,
+      "dist_code": 2,
+      "sub_dist_code": 101,
+      "village_code": 5,
+      "type": "Subsurface Utility",
+      "lat": 13.0827,
+      "lon": 80.2755,
+      "base_elevation": -22.0,
+      "total_height": 22.0,
+      "owner": "CMRL Underground Metro",
+      "status": "Subsurface Title Active",
+      "valuation_cr": 720.0,
+      "zone": "Chennai (GCC / CMRL Central Interchange)",
+      "archetype": "subterranean_multilevel_cavern",
+      "facade_theme": "heritage_red_portal",
+      "roof_feature": "historic_railway_square",
+      "subsurface_infra": "triple_tier_metro_concourse"
+    },
+    {
+      "property_id": 701,
+      "name": "New Town EcoSpace Tech Centre",
+      "city": "Kolkata",
+      "state": "West Bengal",
+      "state_code": 19,
+      "dist_code": 11,
+      "sub_dist_code": 103,
+      "village_code": 19,
+      "type": "Commercial",
+      "lat": 22.5855,
+      "lon": 88.468,
+      "base_elevation": 0.0,
+      "total_height": 92.0,
+      "owner": "Bengal Ambuja Housing Ltd",
+      "status": "Verified 3D Cadastre",
+      "valuation_cr": 810.0,
+      "zone": "Kolkata (WBHIDCO / New Town Rajarhat IT Hub)",
+      "archetype": "green_terrace_commercial",
+      "facade_theme": "eco_bamboo_glass",
+      "roof_feature": "hanging_gardens",
+      "subsurface_infra": "rainwater_harvesting_aquifer"
+    },
+    {
+      "property_id": 702,
+      "name": "Hooghly Underwater Subsurface Corridor",
+      "city": "Kolkata",
+      "state": "West Bengal",
+      "state_code": 19,
+      "dist_code": 11,
+      "sub_dist_code": 101,
+      "village_code": 1,
+      "type": "Subsurface Utility",
+      "lat": 22.582,
+      "lon": 88.351,
+      "base_elevation": -32.0,
+      "total_height": 32.0,
+      "owner": "KMRCL Underwater Metro",
+      "status": "Underwater Engineering Marvel",
+      "valuation_cr": 1150.0,
+      "zone": "Kolkata (KMC / KMRCL Underwater Hooghly Line)",
+      "archetype": "underwater_subaqueous_tunnel",
+      "facade_theme": "subaqueous_shield_rings",
+      "roof_feature": "hooghly_riverbed",
+      "subsurface_infra": "twin_underwater_train_tubes"
+    }
+  ],
+  "stratum_types": {
+    "SUR": {
+      "name": "Surface Land Parcel",
+      "color_hex": "#10B981"
+    },
+    "BLD": {
+      "name": "Multi-Storey Building Unit",
+      "color_hex": "#3B82F6"
+    },
+    "COM": {
+      "name": "Common Condominium Property",
+      "color_hex": "#8B5CF6"
+    },
+    "SUB": {
+      "name": "Subterranean / Basement Unit",
+      "color_hex": "#F59E0B"
+    },
+    "UTL": {
+      "name": "Subsurface Public Utility Corridor",
+      "color_hex": "#EC4899"
+    },
+    "AIR": {
+      "name": "Elevated / Air-Rights Parcel",
+      "color_hex": "#06B6D4"
+    }
+  },
+  "city_viewports": {
+    "\ud83c\uddee\ud83c\uddf3 Pan-India (Subcontinent)": {
+      "lat": 22.5,
+      "lon": 79.5,
+      "zoom": 4.3,
+      "pitch": 35,
+      "bearing": 0,
+      "radius": 22000,
+      "scale": 1800
+    },
+    "Navi Mumbai": {
+      "lat": 19.0216,
+      "lon": 73.0181,
+      "zoom": 15.3,
+      "pitch": 62,
+      "bearing": 32,
+      "radius": 70,
+      "scale": 1
+    },
+    "Mumbai MMR": {
+      "lat": 19.05,
+      "lon": 72.85,
+      "zoom": 12.8,
+      "pitch": 60,
+      "bearing": 25,
+      "radius": 140,
+      "scale": 1
+    },
+    "New Delhi & NCR": {
+      "lat": 28.58,
+      "lon": 77.16,
+      "zoom": 12.2,
+      "pitch": 58,
+      "bearing": 20,
+      "radius": 160,
+      "scale": 1
+    },
+    "Bengaluru": {
+      "lat": 12.98,
+      "lon": 77.63,
+      "zoom": 12.5,
+      "pitch": 60,
+      "bearing": 30,
+      "radius": 150,
+      "scale": 1
+    },
+    "GIFT City": {
+      "lat": 23.161,
+      "lon": 72.684,
+      "zoom": 15.6,
+      "pitch": 64,
+      "bearing": 40,
+      "radius": 65,
+      "scale": 1
+    },
+    "Hyderabad": {
+      "lat": 17.445,
+      "lon": 78.38,
+      "zoom": 13.8,
+      "pitch": 60,
+      "bearing": 30,
+      "radius": 120,
+      "scale": 1
+    },
+    "Chennai": {
+      "lat": 13.04,
+      "lon": 80.26,
+      "zoom": 13.0,
+      "pitch": 58,
+      "bearing": 20,
+      "radius": 140,
+      "scale": 1
+    },
+    "Kolkata": {
+      "lat": 22.58,
+      "lon": 88.41,
+      "zoom": 13.0,
+      "pitch": 58,
+      "bearing": 20,
+      "radius": 140,
+      "scale": 1
+    }
+  },
+  "map_styles": {
+    "\ud83d\udef0\ufe0f Satellite View (High-Res)": "Raster/Vector Style URI",
+    "\ud83d\udef0\ufe0f Hybrid Satellite (Labels & Roads)": "Raster/Vector Style URI",
+    "\ud83c\udf0c Dark Matter (Default)": "Raster/Vector Style URI",
+    "\u2600\ufe0f Minimalist Light": "Raster/Vector Style URI",
+    "\ud83e\udded Voyager Detailed": "Raster/Vector Style URI"
+  },
+  "color_palette_rgba": {
+    "Commercial": [
+      0,
+      212,
+      255,
+      230
+    ],
+    "Apartment": [
+      168,
+      85,
+      247,
+      230
+    ],
+    "Underground Parking": [
+      251,
+      146,
+      60,
+      240
+    ],
+    "Transit": [
+      16,
+      185,
+      129,
+      230
+    ],
+    "Subsurface Utility": [
+      244,
+      63,
+      94,
+      240
+    ]
+  },
+  "archetype_floor_profiles": {
+    "cyber_cylindrical_radial": {
+      "basements": [
+        [
+          "B02",
+          "Tier-IV Subsurface Server Vault & Backup Power",
+          "SUB",
+          "Data Infrastructure"
+        ],
+        [
+          "B01",
+          "Executive Tech Parking & Electrical Substation",
+          "SUB",
+          "Subsurface Parking"
+        ]
+      ],
+      "superstructure": [
+        [
+          "G00",
+          "Grand Tech Atrium, Central Fountain Plaza & Reception",
+          "COM",
+          "Civic / Reception"
+        ],
+        [
+          "F01",
+          "FinTech & Global Banking Digital Operations",
+          "BLD",
+          "Commercial IT"
+        ],
+        [
+          "F02",
+          "AI, Deep Learning & Autonomous Systems Labs",
+          "BLD",
+          "R&D Computing"
+        ],
+        [
+          "F03",
+          "Cloud Infrastructure & Enterprise DevOps Hub",
+          "BLD",
+          "Commercial IT"
+        ],
+        [
+          "F04",
+          "Global Software Engineering Suite - Sector North",
+          "BLD",
+          "Commercial IT"
+        ],
+        [
+          "F05",
+          "Global Software Engineering Suite - Sector South",
+          "BLD",
+          "Commercial IT"
+        ],
+        [
+          "F06",
+          "Global Offshore Delivery & Solution Architecture",
+          "BLD",
+          "Commercial IT"
+        ],
+        [
+          "F07",
+          "National Cyber Security Operations Center (SOC)",
+          "BLD",
+          "Mission Critical IT"
+        ],
+        [
+          "F08",
+          "Executive C-Suite, Boardroom & Panoramic Deck",
+          "BLD",
+          "Executive Corporate"
+        ],
+        [
+          "F09",
+          "Cloud Incubation Accelerator & Sky Cafe Terrace",
+          "COM",
+          "Innovation Lounge"
+        ],
+        [
+          "R01",
+          "Circular Rooftop Helipad & Telecommunications Array",
+          "AIR",
+          "Aviation & Comms"
+        ]
+      ]
+    },
+    "supertall_tiered": {
+      "basements": [
+        [
+          "B04",
+          "Automated Multi-Tier Hydraulic Valet Vault",
+          "SUB",
+          "Automated Parking"
+        ],
+        [
+          "B03",
+          "High-Capacity HVAC Chillers & Building Management Plant",
+          "SUB",
+          "Building Plant"
+        ],
+        [
+          "B02",
+          "Resident VIP Valet Lounge & Chauffeur Quarters",
+          "SUB",
+          "Resident Amenities"
+        ],
+        [
+          "B01",
+          "Subsurface Potable Filtration & Municipal Water Vault",
+          "SUB",
+          "Water Infrastructure"
+        ]
+      ],
+      "superstructure": [
+        [
+          "G00",
+          "Triple-Height Grand Concierge Port Coch\u00e8re & Lobby",
+          "COM",
+          "Luxury Reception"
+        ],
+        [
+          "L01",
+          "Club W Lifestyle Center - Heated Olympic Lap Pool",
+          "COM",
+          "Recreational Amenity"
+        ],
+        [
+          "L02",
+          "Private Squash Courts, Spa & Holistic Wellness Studio",
+          "COM",
+          "Recreational Amenity"
+        ],
+        [
+          "L03",
+          "Private Screening Cinema & Executive Banquet Ballroom",
+          "COM",
+          "Resident Club"
+        ],
+        [
+          "L04",
+          "Signature Arabian Sea-Breeze Luxury Residence 401",
+          "BLD",
+          "Residential 3-BHK"
+        ],
+        [
+          "L05",
+          "Signature Arabian Sea-Breeze Luxury Residence 501",
+          "BLD",
+          "Residential 3-BHK"
+        ],
+        [
+          "L06",
+          "Signature Arabian Sea-Breeze Luxury Residence 601",
+          "BLD",
+          "Residential 3-BHK"
+        ],
+        [
+          "L07",
+          "Signature Arabian Sea-Breeze Luxury Residence 701",
+          "BLD",
+          "Residential 4-BHK"
+        ],
+        [
+          "L08",
+          "High-Rise Panoramic Sky Villa 801 (Dual Balcony)",
+          "BLD",
+          "Residential Sky Villa"
+        ],
+        [
+          "L09",
+          "High-Rise Panoramic Sky Villa 901 (Dual Balcony)",
+          "BLD",
+          "Residential Sky Villa"
+        ],
+        [
+          "L10",
+          "High-Rise Panoramic Sky Villa 1001 (Dual Balcony)",
+          "BLD",
+          "Residential Sky Villa"
+        ],
+        [
+          "L11",
+          "Panoramic Grand Sea-Facing Sky Villa 1101",
+          "BLD",
+          "Residential Sky Villa"
+        ],
+        [
+          "L12",
+          "Panoramic Grand Sea-Facing Sky Villa 1201",
+          "BLD",
+          "Residential Sky Villa"
+        ],
+        [
+          "L13",
+          "Mid-Tower Sky Garden Observatory & Aerobic Deck",
+          "COM",
+          "Mid-Rise Sky Garden"
+        ],
+        [
+          "L14",
+          "Grand Duplex World Mansion (Lower Level)",
+          "BLD",
+          "Duplex Penthouse"
+        ],
+        [
+          "L15",
+          "Grand Duplex World Mansion (Upper Level)",
+          "BLD",
+          "Duplex Penthouse"
+        ],
+        [
+          "L16",
+          "Sovereign Triplex Sky Palace with Private Plunge Pool",
+          "BLD",
+          "Presidential Triplex"
+        ],
+        [
+          "L17",
+          "Crown Observatory Sky Deck & Aviation Beacon Spire",
+          "AIR",
+          "Air Rights & Beacon"
+        ]
+      ]
+    },
+    "stepped_spire_luxury": {
+      "basements": [
+        [
+          "B02",
+          "Supercar Concierge Vault & Security Control Room",
+          "SUB",
+          "Luxury Parking"
+        ],
+        [
+          "B01",
+          "Luxury Logistics & Valet Staging Hub",
+          "SUB",
+          "Subsurface Logistics"
+        ]
+      ],
+      "superstructure": [
+        [
+          "G00",
+          "The Collection Luxury Galleria - Grand Central Piazza",
+          "COM",
+          "Luxury Retail"
+        ],
+        [
+          "L01",
+          "Neoclassical Haute Horlogerie & Fashion Promenade",
+          "COM",
+          "Luxury Retail"
+        ],
+        [
+          "L02",
+          "Fine Dining Amphitheatre & Piazza Terrace",
+          "COM",
+          "F&B / Promenade"
+        ],
+        [
+          "L03",
+          "Private Wealth Management & Sovereign Fund Suites",
+          "BLD",
+          "Financial Office"
+        ],
+        [
+          "L04",
+          "Global Private Equity & Investment Banking Floor",
+          "BLD",
+          "Financial Office"
+        ],
+        [
+          "L05",
+          "UBHL Corporate Headquarters - Sector Alpha",
+          "BLD",
+          "Corporate Office"
+        ],
+        [
+          "L06",
+          "UBHL Corporate Headquarters - Sector Beta",
+          "BLD",
+          "Corporate Office"
+        ],
+        [
+          "L07",
+          "Skyye Observation Lounge & Sunset Cocktail Deck",
+          "COM",
+          "Rooftop Hospitality"
+        ],
+        [
+          "L08",
+          "Prestige Kingfisher Cantilevered Sky Mansion (Lower)",
+          "BLD",
+          "Private Sky Mansion"
+        ],
+        [
+          "L09",
+          "Prestige Kingfisher Cantilevered Sky Mansion (Upper)",
+          "BLD",
+          "Private Sky Mansion"
+        ],
+        [
+          "L10",
+          "Gilded Sovereign Needle Spire & Private Helipad",
+          "AIR",
+          "Aviation Spire"
+        ]
+      ]
+    },
+    "subterranean_multilevel_cavern": {
+      "basements": [
+        [
+          "B04",
+          "Deep Shield Tunnel Platform 3 & 4 (Cross-City Line)",
+          "UTL",
+          "Metro Deep Platform"
+        ],
+        [
+          "B03",
+          "Island Platform 1 & 2 (North-South Rapid Transit)",
+          "UTL",
+          "Metro Island Platform"
+        ],
+        [
+          "B02",
+          "Tunnel Ventilation, Traction Substation & Signal Plant",
+          "UTL",
+          "Transit Systems Plant"
+        ],
+        [
+          "B01",
+          "Passenger Concourse, AFC Smart Gates & Retail Subway",
+          "COM",
+          "Ticketing & Concourse"
+        ]
+      ],
+      "superstructure": [
+        [
+          "G00",
+          "Heritage Surface Entry Pavilion & Central Plaza Link",
+          "SUR",
+          "Surface Civic Portal"
+        ]
+      ]
+    },
+    "transit_quad_podium": {
+      "basements": [
+        [
+          "B02",
+          "Suburban Commuter Park-and-Ride Underground Vault",
+          "SUB",
+          "Transit Parking"
+        ],
+        [
+          "B01",
+          "Direct Station Subway Link & Subsurface Retail Corridor",
+          "COM",
+          "Pedestrian Subway"
+        ]
+      ],
+      "superstructure": [
+        [
+          "G00",
+          "EMU Suburban Railway Tracks, Ticketing & Bus Terminal",
+          "UTL",
+          "Multimodal Terminal"
+        ],
+        [
+          "L01",
+          "Nexus Grand Central Mall - Fashion & Anchor Brands",
+          "COM",
+          "Retail Promenade"
+        ],
+        [
+          "L02",
+          "Nexus Grand Central Mall - Gourmet Food Hall & Multiplex",
+          "COM",
+          "Entertainment Arena"
+        ],
+        [
+          "L03",
+          "Podium Sky Garden, 5 Elliptical Domes & Transfer Lobbies",
+          "COM",
+          "Podium Sky Garden"
+        ],
+        [
+          "L04",
+          "Quad Tower 1 - High-Tech Innovation & Fintech Hub",
+          "BLD",
+          "Corporate Office"
+        ],
+        [
+          "L05",
+          "Quad Tower 2 - Global Engineering Consulting Center",
+          "BLD",
+          "Corporate Office"
+        ],
+        [
+          "L06",
+          "Quad Tower 3 - Enterprise IT & Software Solutions",
+          "BLD",
+          "Corporate Office"
+        ],
+        [
+          "L07",
+          "Quad Tower 4 - Multinationals Executive Headquarters",
+          "BLD",
+          "Corporate Office"
+        ],
+        [
+          "L08",
+          "Elevated Glass Skybridge Links & Executive Boardrooms",
+          "BLD",
+          "Skybridge Executive"
+        ],
+        [
+          "L09",
+          "Rooftop High-Efficiency Solar PV Canopy & Helistop",
+          "AIR",
+          "Renewable & Air Rights"
+        ]
+      ]
+    },
+    "crystalline_diamond": {
+      "basements": [
+        [
+          "B03",
+          "Subterranean Utility Tunnel (TUM) Connection & Cooling Intake",
+          "UTL",
+          "Utility Link"
+        ],
+        [
+          "B02",
+          "Ultra-Secure Diamond Vault & Customs Depository",
+          "SUB",
+          "High-Security Vault"
+        ],
+        [
+          "B01",
+          "Armored Vehicle Logistics Bay & Screened Valet",
+          "SUB",
+          "Secure Logistics"
+        ]
+      ],
+      "superstructure": [
+        [
+          "G00",
+          "Diamond Bourse International Trading Hall & Security Gates",
+          "COM",
+          "Commodity Bourse"
+        ],
+        [
+          "L01",
+          "Gemological Certification & Laser Inscription Labs",
+          "BLD",
+          "Specialized Labs"
+        ],
+        [
+          "L02",
+          "International Rough & Polished Diamond Trading Floor",
+          "BLD",
+          "Trading Bourse"
+        ],
+        [
+          "L03",
+          "Precious Metals & Bullion Merchant Suites",
+          "BLD",
+          "Financial Office"
+        ],
+        [
+          "L04",
+          "Diamond Exporters Global Executive Chambers",
+          "BLD",
+          "Commercial Office"
+        ],
+        [
+          "L05",
+          "Crystalline Diamond Sky Atrium & VIP Observatory",
+          "COM",
+          "Sky Lounge"
+        ],
+        [
+          "L06",
+          "Observation Crown & Automated Beacon Mast",
+          "AIR",
+          "Aviation Beacon"
+        ]
+      ]
+    },
+    "circular_heritage_rotunda": {
+      "basements": [
+        [
+          "B01",
+          "Subsurface Heritage Utility Conduits & Storage Vault",
+          "SUB",
+          "Service Vault"
+        ]
+      ],
+      "superstructure": [
+        [
+          "G00",
+          "Georgian Doric Colonnade Arcade & White Portico Entrance",
+          "COM",
+          "Heritage Retail"
+        ],
+        [
+          "L01",
+          "Central Business District Banking & Heritage Chambers",
+          "BLD",
+          "Commercial Office"
+        ],
+        [
+          "L02",
+          "Central Business District Legal & Consulting Suites",
+          "BLD",
+          "Commercial Office"
+        ],
+        [
+          "L03",
+          "Rotunda Dome Lantern & Heritage Balcony Panorama",
+          "AIR",
+          "Heritage Air Rights"
+        ]
+      ]
+    },
+    "skybridge_twin": {
+      "basements": [
+        [
+          "B02",
+          "Double-Basement Tech Valet & Backup Generator Vault",
+          "SUB",
+          "Building Plant"
+        ],
+        [
+          "B01",
+          "Subsurface Transit Shuttle Terminal & Delivery Docks",
+          "SUB",
+          "Logistics Dock"
+        ]
+      ],
+      "superstructure": [
+        [
+          "G00",
+          "Twin Tower Alpha-Beta Grand Marble Atrium & Security Portals",
+          "COM",
+          "Grand Reception"
+        ],
+        [
+          "L01",
+          "Global Cloud Consulting Suites (Tower Alpha & Beta)",
+          "BLD",
+          "Enterprise IT"
+        ],
+        [
+          "L02",
+          "Enterprise Software Engineering Centers",
+          "BLD",
+          "Enterprise IT"
+        ],
+        [
+          "L03",
+          "AI Innovation & Client Experience Center",
+          "BLD",
+          "Enterprise IT"
+        ],
+        [
+          "L04",
+          "Suspended 2-Storey Skybridge Link - Collaborative Zone",
+          "COM",
+          "Skybridge Corridor"
+        ],
+        [
+          "L05",
+          "Suspended 2-Storey Skybridge Link - Executive Cafe",
+          "COM",
+          "Skybridge Corridor"
+        ],
+        [
+          "L06",
+          "Multi-Tenant Corporate Executive Suites",
+          "BLD",
+          "Corporate Office"
+        ],
+        [
+          "L07",
+          "Rooftop Telecommunications Arrays & Rapid Metro Overlook",
+          "AIR",
+          "Air Rights & Comms"
+        ]
+      ]
+    },
+    "underwater_subaqueous_tunnel": {
+      "basements": [
+        [
+          "B04",
+          "Twin Bored Shield Tunnel - Eastbound Metro Track (-24m)",
+          "UTL",
+          "Subaqueous Rail"
+        ],
+        [
+          "B03",
+          "Twin Bored Shield Tunnel - Westbound Metro Track (-24m)",
+          "UTL",
+          "Subaqueous Rail"
+        ],
+        [
+          "B02",
+          "Emergency Cross-Passage Evacuation Adit & Dewatering Sump",
+          "UTL",
+          "Safety Tunnel"
+        ],
+        [
+          "B01",
+          "Subaqueous Silt Strata Geotechnical Anchor & Monitoring Bed",
+          "SUB",
+          "Geotechnical Surcharge"
+        ]
+      ],
+      "superstructure": [
+        [
+          "G00",
+          "Hooghly River Navigational Waterway & Surface Fairway (-2m to 0m)",
+          "SUR",
+          "Navigable Waterway"
+        ]
+      ]
+    },
+    "utility_tunnel_trench": {
+      "basements": [
+        [
+          "B04",
+          "Deep Potable Water & Recycled Greywater Distribution Mains",
+          "UTL",
+          "Water Mains"
+        ],
+        [
+          "B03",
+          "33kV High Voltage Electrical Grid & Dark Fiber Conduits",
+          "UTL",
+          "Power & Telecom"
+        ],
+        [
+          "B02",
+          "Automated Vacuum Waste Collection (AVLS) Pneumatic Tubes",
+          "UTL",
+          "Vacuum Waste"
+        ],
+        [
+          "B01",
+          "District Cooling System (DCS) Chilled Water Supply & Return Ducts",
+          "UTL",
+          "District Cooling"
+        ]
+      ],
+      "superstructure": [
+        [
+          "G00",
+          "Surface Street Utility Chamber, Manhole Portals & Inspection Hatches",
+          "SUR",
+          "Surface Utility Access"
+        ]
+      ]
+    }
+  }
+}

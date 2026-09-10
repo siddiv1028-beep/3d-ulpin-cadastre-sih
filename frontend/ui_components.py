@@ -535,7 +535,7 @@ def render_vertical_stack(floors, prop_data, theme="dark"):
                 text_col = "#f1f5f9"
                 z_bg = "rgba(0,0,0,0.3)"
                 z_text = "#94a3b8"
-            title = f"Basement {abs(floor_num):02d} (Subsurface)"
+            default_title = f"Basement {abs(floor_num):02d} (Subsurface)"
             z_badge = f"{z_end}m to {z_start}m"
         else:
             if is_light:
@@ -552,16 +552,20 @@ def render_vertical_stack(floors, prop_data, theme="dark"):
                 text_col = "#f1f5f9"
                 z_bg = "rgba(0,0,0,0.3)"
                 z_text = "#94a3b8"
-            title = f"Level {floor_num:02d} (Superstructure)"
+            default_title = f"Level {floor_num:02d} (Superstructure)"
             z_badge = f"+{z_start}m to +{z_end}m"
+
+        lvl_code = f.get('level_code', f"#{abs(floor_num):02d}")
+        flr_title = f.get('floor_name', default_title)
+        use_cat = f.get('use_category', '')
             
         block = f"""
             <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 12px; background: {bg}; border: 1px solid {border_col}; border-radius: 6px; margin-bottom: 4px; font-size: 0.78rem;">
-                <div style="display: flex; align-items: center; gap: 8px;">
-                    <span style="font-weight: 700; color: {badge_col}; font-family: 'JetBrains Mono', monospace;">#{abs(floor_num):02d}</span>
-                    <span style="color: {text_col}; font-weight: 600;">{title}</span>
+                <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 68%;">
+                    <span style="font-weight: 700; color: {badge_col}; font-family: 'JetBrains Mono', monospace; flex-shrink: 0;">{lvl_code}</span>
+                    <span style="color: {text_col}; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="{flr_title}">{flr_title}</span>
                 </div>
-                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: {z_text}; background: {z_bg}; padding: 2px 6px; border-radius: 4px;">
+                <div style="font-family: 'JetBrains Mono', monospace; font-size: 0.72rem; color: {z_text}; background: {z_bg}; padding: 2px 6px; border-radius: 4px; flex-shrink: 0;">
                     {z_badge}
                 </div>
             </div>
@@ -641,9 +645,10 @@ def render_bhu_aadhaar_card_preview(prop, floor_dict, ulpin_str, theme="dark"):
     """
     is_light = theme == "light"
     z_range = f"{floor_dict['z_start']}m to {floor_dict['z_end']}m"
+    effective_owner = floor_dict.get('owner') or prop.get('owner', 'Government Cadastral Registry')
     sha_hash = generate_title_hash(
         ulpin_str,
-        prop['owner'],
+        effective_owner,
         prop['lat'],
         prop['lon'],
         z_range,
@@ -652,7 +657,7 @@ def render_bhu_aadhaar_card_preview(prop, floor_dict, ulpin_str, theme="dark"):
 
     qr_payload = {
         "ulpin": ulpin_str,
-        "owner": prop['owner'],
+        "owner": effective_owner,
         "plot": int(prop['property_id']),
         "level": floor_dict['floor_number'],
         "z_range": z_range,
@@ -703,8 +708,9 @@ def render_bhu_aadhaar_card_preview(prop, floor_dict, ulpin_str, theme="dark"):
                     {ulpin_str}
                 </div>
                 <div style="font-size: 0.78rem; color: {text_col}; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 8px;">
-                    <div><span style="color: {label_col};">Title Holder:</span> <b>{prop['owner']}</b></div>
+                    <div><span style="color: {label_col};">Title Holder:</span> <b>{effective_owner}</b></div>
                     <div><span style="color: {label_col};">Vertical Span:</span> <b>{z_range}</b></div>
+                    <div style="grid-column: span 2;"><span style="color: {label_col};">Unit Designation:</span> <b style="color: {title_header_col};">{floor_dict.get('floor_name', f"Level {floor_dict.get('floor_number')}")}</b></div>
                     <div><span style="color: {label_col};">Complex:</span> <b>{prop['name']}</b></div>
                     <div><span style="color: {label_col};">Jurisdiction:</span> <b>{prop['city']}, {prop['state']}</b></div>
                 </div>

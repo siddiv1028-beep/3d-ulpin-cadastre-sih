@@ -10,25 +10,73 @@ COLOR_PALETTE = {
     'Subsurface Utility': [244, 63, 94, 240],  # Rose / Magma Red
 }
 
+import json
+import base64
+
+# Satellite & Hybrid raster styles for MapLibre / Deck.gl
+_ESRI_SATELLITE_SPEC = {
+    "version": 8,
+    "sources": {
+        "satellite": {
+            "type": "raster",
+            "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+            "tileSize": 256,
+            "maxzoom": 19
+        }
+    },
+    "layers": [
+        {"id": "satellite-layer", "type": "raster", "source": "satellite", "minzoom": 0, "maxzoom": 22}
+    ]
+}
+
+_HYBRID_SATELLITE_SPEC = {
+    "version": 8,
+    "sources": {
+        "satellite": {
+            "type": "raster",
+            "tiles": ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+            "tileSize": 256,
+            "maxzoom": 19
+        },
+        "labels": {
+            "type": "raster",
+            "tiles": ["https://basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png"],
+            "tileSize": 256,
+            "maxzoom": 19
+        }
+    },
+    "layers": [
+        {"id": "satellite-layer", "type": "raster", "source": "satellite", "minzoom": 0, "maxzoom": 22},
+        {"id": "labels-layer", "type": "raster", "source": "labels", "minzoom": 0, "maxzoom": 22}
+    ]
+}
+
+_SATELLITE_URI = "data:application/json;base64," + base64.b64encode(json.dumps(_ESRI_SATELLITE_SPEC).encode()).decode()
+_HYBRID_URI = "data:application/json;base64," + base64.b64encode(json.dumps(_HYBRID_SATELLITE_SPEC).encode()).decode()
+
 MAP_STYLES = {
-    "Dark Matter (Default)": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
-    "Minimalist Light": "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
-    "Voyager Detailed": "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
+    "🛰️ Satellite View (High-Res)": _SATELLITE_URI,
+    "🛰️ Hybrid Satellite (Labels & Roads)": _HYBRID_URI,
+    "🌌 Dark Matter (Default)": "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+    "☀️ Minimalist Light": "https://basemaps.cartocdn.com/gl/positron-gl-style/style.json",
+    "🧭 Voyager Detailed": "https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json"
 }
 
 CITY_VIEWPORTS = {
+    "🇮🇳 Pan-India (National Cadastre)": {"lat": 22.5000, "lon": 79.5000, "zoom": 4.3, "pitch": 35, "bearing": 0, "radius": 22000, "scale": 1800},
     "🇮🇳 Pan-India (Subcontinent)": {"lat": 22.5000, "lon": 79.5000, "zoom": 4.3, "pitch": 35, "bearing": 0, "radius": 22000, "scale": 1800},
-    "Navi Mumbai": {"lat": 19.0216, "lon": 73.0181, "zoom": 15.3, "pitch": 62, "bearing": 32, "radius": 70, "scale": 1},
-    "Mumbai MMR": {"lat": 19.0500, "lon": 72.8500, "zoom": 12.8, "pitch": 60, "bearing": 25, "radius": 140, "scale": 1},
-    "New Delhi & NCR": {"lat": 28.5800, "lon": 77.1600, "zoom": 12.2, "pitch": 58, "bearing": 20, "radius": 160, "scale": 1},
-    "Bengaluru": {"lat": 12.9800, "lon": 77.6300, "zoom": 12.5, "pitch": 60, "bearing": 30, "radius": 150, "scale": 1},
-    "GIFT City": {"lat": 23.1610, "lon": 72.6840, "zoom": 15.6, "pitch": 64, "bearing": 40, "radius": 65, "scale": 1},
-    "Hyderabad": {"lat": 17.4450, "lon": 78.3800, "zoom": 13.8, "pitch": 60, "bearing": 30, "radius": 120, "scale": 1},
-    "Chennai": {"lat": 13.0400, "lon": 80.2600, "zoom": 13.0, "pitch": 58, "bearing": 20, "radius": 140, "scale": 1},
-    "Kolkata": {"lat": 22.5800, "lon": 88.4100, "zoom": 13.0, "pitch": 58, "bearing": 20, "radius": 140, "scale": 1},
+    "Gurugram (NCR - Cyber City & Golf Course Corridor)": {"lat": 28.4952, "lon": 77.0895, "zoom": 15.2, "pitch": 62, "bearing": 30, "radius": 75, "scale": 1},
+    "Navi Mumbai (MMR - Belapur & Seawoods TOD)": {"lat": 19.0216, "lon": 73.0181, "zoom": 15.3, "pitch": 62, "bearing": 32, "radius": 70, "scale": 1},
+    "Mumbai (MMR - Worli Sea Face & BKC Financial Centre)": {"lat": 19.0400, "lon": 72.8400, "zoom": 13.0, "pitch": 60, "bearing": 25, "radius": 130, "scale": 1},
+    "New Delhi (NCT - Lutyens & Central Business District)": {"lat": 28.6328, "lon": 77.2197, "zoom": 14.5, "pitch": 58, "bearing": 20, "radius": 110, "scale": 1},
+    "Bengaluru Urban (BBMP - IT Corridor, Whitefield & CBD)": {"lat": 12.9780, "lon": 77.6100, "zoom": 13.0, "pitch": 60, "bearing": 30, "radius": 140, "scale": 1},
+    "GIFT City (Gandhinagar / Ahmedabad IFSC)": {"lat": 23.1610, "lon": 72.6840, "zoom": 15.6, "pitch": 64, "bearing": 40, "radius": 65, "scale": 1},
+    "Hyderabad (GHMC - Cyberabad & HITEC City)": {"lat": 17.4480, "lon": 78.3800, "zoom": 14.2, "pitch": 60, "bearing": 30, "radius": 110, "scale": 1},
+    "Chennai (GCC - OMR IT Expressway & Central)": {"lat": 13.0200, "lon": 80.2600, "zoom": 13.2, "pitch": 58, "bearing": 20, "radius": 130, "scale": 1},
+    "Kolkata (KMC - New Town IT Hub & Underwater Metro)": {"lat": 22.5830, "lon": 88.4000, "zoom": 13.2, "pitch": 58, "bearing": 20, "radius": 130, "scale": 1},
 }
 
-def render_3d_map(df, selected_region="🇮🇳 Pan-India (Subcontinent)", custom_center=None, map_theme="Dark Matter (Default)"):
+def render_3d_map(df, selected_region="🇮🇳 Pan-India (National Cadastre)", custom_center=None, map_theme="Dark Matter (Default)"):
     """
     Renders an interactive, futuristic 3D Cadastral Deck.gl map.
     Supports pan-India continent scale down to micro-parcel vertical footprints.
@@ -50,9 +98,13 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (Subcontinent)", custo
         else f"Surface to +{r['total_height']}m",
         axis=1
     )
+    map_df['archetype_display'] = map_df['archetype'].apply(
+        lambda a: str(a).replace('_', ' ').title() if pd.notna(a) and str(a) != 'None' else 'Parametric Modern'
+    ) if 'archetype' in map_df.columns else 'Parametric Modern'
 
     # Determine camera view state & scale
-    preset = CITY_VIEWPORTS.get(selected_region, CITY_VIEWPORTS["🇮🇳 Pan-India (Subcontinent)"])
+    pan_india_default = CITY_VIEWPORTS.get("🇮🇳 Pan-India (National Cadastre)") or CITY_VIEWPORTS.get("🇮🇳 Pan-India (Subcontinent)") or list(CITY_VIEWPORTS.values())[0]
+    preset = CITY_VIEWPORTS.get(selected_region, pan_india_default)
     
     if custom_center:
         # Focusing on a specific selected property
@@ -63,7 +115,7 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (Subcontinent)", custo
         bearing = 35
         radius = 55
         elevation_scale = 1
-    elif selected_region == "🇮🇳 Pan-India (Subcontinent)":
+    elif selected_region.startswith("🇮🇳") or "Pan-India" in selected_region:
         view_lat = preset["lat"]
         view_lon = preset["lon"]
         zoom = preset["zoom"]
@@ -121,6 +173,28 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (Subcontinent)", custo
     )
     layers.append(scatter_layer)
 
+    # Add Satellite raster tile layers if satellite mode is selected
+    if "Satellite" in map_theme:
+        sat_tile_layer = pdk.Layer(
+            "TileLayer",
+            id="esri-satellite-basemap",
+            data="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+            min_zoom=0,
+            max_zoom=19,
+            tile_size=256
+        )
+        layers.insert(0, sat_tile_layer)
+        if "Hybrid" in map_theme:
+            label_tile_layer = pdk.Layer(
+                "TileLayer",
+                id="carto-labels-overlay",
+                data="https://basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}.png",
+                min_zoom=0,
+                max_zoom=19,
+                tile_size=256
+            )
+            layers.append(label_tile_layer)
+
     # Informative & Minimalist Glassmorphism Tooltip
     tooltip_html = """
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; min-width: 200px; padding: 4px 6px;">
@@ -131,7 +205,7 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (Subcontinent)", custo
             {name}
         </div>
         <div style="font-size: 11px; margin-bottom: 3px; color: #cbd5e1;">
-            <span style="color: #64748b;">Type:</span> <b>{type}</b>
+            <span style="color: #64748b;">Type:</span> <b>{type}</b> &bull; <span style="color: #38bdf8;">{archetype_display}</span>
         </div>
         <div style="font-size: 11px; margin-bottom: 3px; color: #cbd5e1;">
             <span style="color: #64748b;">Vertical Span:</span> <b>{total_height}m</b> ({elevation_label})
@@ -145,7 +219,15 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (Subcontinent)", custo
     </div>
     """
 
-    map_style_url = MAP_STYLES.get(map_theme, MAP_STYLES["Dark Matter (Default)"])
+    # Resolve map style with fuzzy fallback
+    map_style_url = MAP_STYLES.get(map_theme)
+    if not map_style_url:
+        for k, v in MAP_STYLES.items():
+            if map_theme.lower() in k.lower():
+                map_style_url = v
+                break
+    if not map_style_url:
+        map_style_url = MAP_STYLES["🌌 Dark Matter (Default)"]
 
     return pdk.Deck(
         layers=layers,
