@@ -1504,21 +1504,127 @@ def render_3d_digital_twin_component(
             val: "₹ 620 Cr"
           }});
 
-          // 2. Active Railway Track Corridor with Dual Tracks cutting through Ground Level
-          const trkCorridor = new THREE.Mesh(new THREE.BoxGeometry(44, 5, 0.3), new THREE.MeshStandardMaterial({{ color: 0x1e293b, roughness: 0.9 }}));
+          // Horizontal decorative spandrel bands separating retail floors G, L1, L2
+          [3.3, 6.6].forEach(sz => {{
+            const spPodium = new THREE.Mesh(new THREE.BoxGeometry(34.4, 34.4, 0.35), new THREE.MeshStandardMaterial({{ color: 0xe2e8f0, roughness: 0.3, metalness: 0.4 }}));
+            spPodium.position.set(20, 20, sz);
+            groups.BLD.add(spPodium);
+          }});
+
+          // Grand Cantilevered Entrance Portals (South Mall Entrance)
+          const canopyMat = new THREE.MeshStandardMaterial({{ color: 0x0284c7, transparent: true, opacity: 0.85, roughness: 0.1 }});
+          const southCanopy = new THREE.Mesh(new THREE.BoxGeometry(12, 4.5, 0.3), canopyMat);
+          southCanopy.position.set(20, 1.8, 4.5);
+          southCanopy.rotation.x = 0.08;
+          groups.BLD.add(southCanopy);
+
+          // Stainless steel canopy tie-rods
+          [-5, 5].forEach(cx => {{
+            const tieGeo = new THREE.CylinderGeometry(0.06, 0.06, 4.2, 8);
+            tieGeo.rotateX(Math.PI / 4);
+            const tieMesh = new THREE.Mesh(tieGeo, new THREE.MeshStandardMaterial({{ color: 0xe2e8f0, metalness: 0.9 }}));
+            tieMesh.position.set(20 + cx, 3.2, 6.0);
+            groups.BLD.add(tieMesh);
+          }});
+
+          // 2. Active Seawoods-Darave Railway Station Corridor with Passenger Platforms & Mumbai EMU Local Train
+          // Gravel Ballast Track Bed
+          const trkCorridor = new THREE.Mesh(new THREE.BoxGeometry(44, 6.0, 0.35), new THREE.MeshStandardMaterial({{ color: 0x1e293b, roughness: 0.95 }}));
           trkCorridor.position.set(20, 20, 0.15);
           groups.SUR.add(trkCorridor);
 
-          [-1.5, 1.5].forEach(offsetY => {{
-            const railMesh = new THREE.Mesh(new THREE.BoxGeometry(44, 0.35, 0.25), new THREE.MeshStandardMaterial({{ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 }}));
-            railMesh.position.set(20, 20 + offsetY, 0.35);
-            groups.SUR.add(railMesh);
+          // Station Concrete Passenger Platform between tracks (with tactile yellow safety edge)
+          const platGeo = new THREE.BoxGeometry(44, 2.2, 0.75);
+          const platMat = new THREE.MeshStandardMaterial({{ color: 0x64748b, roughness: 0.8 }});
+          const platform = new THREE.Mesh(platGeo, platMat);
+          platform.position.set(20, 20, 0.4);
+          groups.SUR.add(platform);
+
+          // Yellow tactile safety warning strips along platform edges
+          [-1.05, 1.05].forEach(py => {{
+            const yLine = new THREE.Mesh(new THREE.BoxGeometry(44, 0.12, 0.05), new THREE.MeshBasicMaterial({{ color: 0xfacc15 }}));
+            yLine.position.set(20, 20 + py, 0.78);
+            groups.SUR.add(yLine);
           }});
 
-          // 3. Five Elliptical Skylights on the Podium Roof Terrace (Z = 10m)
+          // Station Platform Shelter Canopy & Stanchion Posts
+          [-15, -5, 5, 15].forEach(postX => {{
+            const postGeo = new THREE.CylinderGeometry(0.12, 0.12, 2.6, 8);
+            postGeo.rotateX(Math.PI / 2);
+            const post = new THREE.Mesh(postGeo, new THREE.MeshStandardMaterial({{ color: 0x475569, metalness: 0.7 }}));
+            post.position.set(20 + postX, 20, 1.7);
+            groups.SUR.add(post);
+          }});
+          const stationCanopy = new THREE.Mesh(new THREE.BoxGeometry(40, 2.6, 0.2), new THREE.MeshStandardMaterial({{ color: 0x334155, roughness: 0.6 }}));
+          stationCanopy.position.set(20, 20, 3.0);
+          groups.SUR.add(stationCanopy);
+
+          // Dual Running Railway Tracks (Track 1 & Track 2)
+          [-2.2, 2.2].forEach(offsetY => {{
+            [-0.5, 0.5].forEach(railOffset => {{
+              const railMesh = new THREE.Mesh(new THREE.BoxGeometry(44, 0.18, 0.22), new THREE.MeshStandardMaterial({{ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 }}));
+              railMesh.position.set(20, 20 + offsetY + railOffset, 0.32);
+              groups.SUR.add(railMesh);
+            }});
+          }});
+
+          // 3-Coach Mumbai Suburban EMU Commuter Local Train on Track 1 (Violet / Purple & White livery)
+          const trainLiveryViolet = new THREE.MeshBasicMaterial({{ color: 0x581c87 }});
+          const trainBodyMat = new THREE.MeshStandardMaterial({{ color: 0xf1f5f9, metalness: 0.7, roughness: 0.3 }});
+          const trainWinMat = new THREE.MeshStandardMaterial({{ color: 0x0f172a, roughness: 0.1 }});
+          const trainHvacMat = new THREE.MeshStandardMaterial({{ color: 0x475569, roughness: 0.7 }});
+
+          const trainCars = [
+            {{ x: 12.0, isCab: "west" }},
+            {{ x: 19.5, isCab: false }},
+            {{ x: 27.0, isCab: "east" }}
+          ];
+
+          trainCars.forEach(tc => {{
+            // Coach main body
+            const coach = new THREE.Mesh(new THREE.BoxGeometry(6.8, 1.6, 1.5), trainBodyMat);
+            coach.position.set(tc.x, 17.8, 1.3);
+            groups.SUR.add(coach);
+
+            // Mumbai Suburban Purple Livery Stripe
+            const stripe = new THREE.Mesh(new THREE.BoxGeometry(6.82, 1.62, 0.32), trainLiveryViolet);
+            stripe.position.set(tc.x, 17.8, 1.05);
+            groups.SUR.add(stripe);
+
+            // Passenger Panoramic Windows
+            const wL = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.05, 0.5), trainWinMat);
+            wL.position.set(tc.x, 17.0, 1.4);
+            groups.SUR.add(wL);
+            const wR = new THREE.Mesh(new THREE.BoxGeometry(6.0, 0.05, 0.5), trainWinMat);
+            wR.position.set(tc.x, 18.6, 1.4);
+            groups.SUR.add(wR);
+
+            // Rooftop HVAC Unit
+            const hvac = new THREE.Mesh(new THREE.BoxGeometry(2.8, 0.9, 0.25), trainHvacMat);
+            hvac.position.set(tc.x, 17.8, 2.15);
+            groups.SUR.add(hvac);
+
+            // Diamond Pantograph on center motor coach
+            if (!tc.isCab) {{
+              const pantoMat = new THREE.LineBasicMaterial({{ color: 0xef4444, linewidth: 2 }});
+              const pantoGeo = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(tc.x - 0.8, 17.8, 2.25),
+                new THREE.Vector3(tc.x, 17.8, 2.95),
+                new THREE.Vector3(tc.x + 0.8, 17.8, 2.25)
+              ]);
+              groups.SUR.add(new THREE.Line(pantoGeo, pantoMat));
+            }}
+          }});
+
+          // 3. Atrium Skylights & Podium Roof Sky Terrace (Z = 10m)
+          // Central grand dome with geodesic steel ribbing
           const mainDome = new THREE.Mesh(new THREE.SphereGeometry(4.6, 24, 14, 0, Math.PI * 2, 0, Math.PI / 2), new THREE.MeshStandardMaterial({{ color: 0x38bdf8, transparent: true, opacity: 0.82, roughness: 0.1 }}));
           mainDome.position.set(20, 20, 10);
           groups.AIR.add(mainDome);
+
+          const mainDomeWire = new THREE.LineSegments(new THREE.WireframeGeometry(mainDome.geometry), new THREE.LineBasicMaterial({{ color: 0xe2e8f0, transparent: true, opacity: 0.4 }}));
+          mainDomeWire.position.set(20, 20, 10);
+          groups.AIR.add(mainDomeWire);
 
           const domeLocs = [[11, 11], [29, 11], [11, 29], [29, 29]];
           domeLocs.forEach(([dx, dy]) => {{
@@ -1527,15 +1633,25 @@ def render_3d_digital_twin_component(
             groups.AIR.add(sDome);
           }});
 
-          // 4. Four Distinct Quad Towers (Floors 3 to 7, 10 to 34m)
+          // Podium Rooftop Garden / Landscaped Promenade Decks
+          const gardenDeckMat = new THREE.MeshStandardMaterial({{ color: 0x15803d, roughness: 0.9 }});
+          const g1 = new THREE.Mesh(new THREE.BoxGeometry(6, 4, 0.15), gardenDeckMat);
+          g1.position.set(20, 12, 10.08);
+          groups.BLD.add(g1);
+          const g2 = new THREE.Mesh(new THREE.BoxGeometry(6, 4, 0.15), gardenDeckMat);
+          g2.position.set(20, 28, 10.08);
+          groups.BLD.add(g2);
+
+          // 4. Four Distinct Quad Commercial Towers (Towers 1-4, Floors 3 to 7, 10 to 34m)
           const quads = [
-            {{ id: "T1", name: "Quad Tower 1 (Fintech & Cloud Hub)", poly: [[5,22],[17,22],[17,35],[5,35]], clr: 0x0369a1, owner: "Larsen & Toubro Infotech (LTIMindtree Cloud Center)" }},
-            {{ id: "T2", name: "Quad Tower 2 (Engineering & R&D)", poly: [[23,22],[35,22],[35,35],[23,35]], clr: 0x38bdf8, owner: "Jacobs Engineering India Private Limited" }},
-            {{ id: "T3", name: "Quad Tower 3 (Global Business Services)", poly: [[5,5],[17,5],[17,18],[5,18]], clr: 0x0284c7, owner: "BNP Paribas India Solutions Private Limited" }},
-            {{ id: "T4", name: "Quad Tower 4 (Multinational Headquarters)", poly: [[23,5],[35,5],[35,18],[23,18]], clr: 0x0ea5e9, owner: "Siemens Healthcare & Smart Infrastructure HQ" }}
+            {{ id: "T1", name: "Quad Tower 1 (Fintech & Cloud Hub)", poly: [[5,22],[17,22],[17,35],[5,35]], cx: 11, cy: 28.5, clr: 0x0369a1, owner: "Larsen & Toubro Infotech (LTIMindtree Cloud Center)" }},
+            {{ id: "T2", name: "Quad Tower 2 (Engineering & R&D)", poly: [[23,22],[35,22],[35,35],[23,35]], cx: 29, cy: 28.5, clr: 0x38bdf8, owner: "Jacobs Engineering India Private Limited" }},
+            {{ id: "T3", name: "Quad Tower 3 (Global Business Services)", poly: [[5,5],[17,5],[17,18],[5,18]], cx: 11, cy: 11.5, clr: 0x0284c7, owner: "BNP Paribas India Solutions Private Limited" }},
+            {{ id: "T4", name: "Quad Tower 4 (Multinational Headquarters)", poly: [[23,5],[35,5],[35,18],[23,18]], cx: 29, cy: 11.5, clr: 0x0ea5e9, owner: "Siemens Healthcare & Smart Infrastructure HQ" }}
           ];
 
           quads.forEach(q => {{
+            // Extruded floors 3 to 7 with architectural spandrels
             for (let f = 3; f <= 7; f++) {{
               const zMin = 10 + (f - 3) * 4.8;
               const zMax = zMin + 4.8;
@@ -1548,29 +1664,95 @@ def render_3d_digital_twin_component(
                 owner: q.owner,
                 val: "₹ 24.5 Cr"
               }});
+
+              // Architectural horizontal spandrel louvers at each floor slab
+              const spandrel = new THREE.Mesh(new THREE.BoxGeometry(12.2, 13.2, 0.28), new THREE.MeshStandardMaterial({{ color: 0xf1f5f9, metalness: 0.5, roughness: 0.3 }}));
+              spandrel.position.set(q.cx, q.cy, zMin + 0.15);
+              groups.BLD.add(spandrel);
+
+              // Vertical exterior sun-shading glass fins (curtain wall mullions)
+              [-5, -2, 2, 5].forEach(mx => {{
+                const fin = new THREE.Mesh(new THREE.BoxGeometry(0.12, 13.4, 4.2), new THREE.MeshStandardMaterial({{ color: 0xbae6fd, transparent: true, opacity: 0.7 }}));
+                fin.position.set(q.cx + mx, q.cy, zMin + 2.4);
+                groups.BLD.add(fin);
+              }});
             }}
+
+            // Tower Rooftop Mechanical Penthouse (MEP Level, Z = 34 to 38.5m)
+            const roGeo = new THREE.BoxGeometry(7, 8, 3.2);
+            const roMat = new THREE.MeshStandardMaterial({{ color: 0x334155, roughness: 0.6 }});
+            const roMesh = new THREE.Mesh(roGeo, roMat);
+            roMesh.position.set(q.cx, q.cy, 35.6);
+            groups.AIR.add(roMesh);
+
+            // Dual Rooftop Industrial Cooling Towers
+            [-1.8, 1.8].forEach(ctOffset => {{
+              const ctGeo = new THREE.CylinderGeometry(1.2, 1.2, 1.8, 16);
+              ctGeo.rotateX(Math.PI / 2);
+              const ctMesh = new THREE.Mesh(ctGeo, new THREE.MeshStandardMaterial({{ color: 0x475569, metalness: 0.7 }}));
+              ctMesh.position.set(q.cx + ctOffset, q.cy + 2.2, 38.0);
+              groups.AIR.add(ctMesh);
+            }});
+
+            // BMU Window-Washing Crane Rig with boom
+            const bmuMat = new THREE.MeshStandardMaterial({{ color: 0xfacc15, roughness: 0.4 }});
+            const bmuBase = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.0, 1.2), bmuMat);
+            bmuBase.position.set(q.cx - 2.0, q.cy - 2.2, 37.8);
+            groups.AIR.add(bmuBase);
+            const bmuArm = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.25, 0.25), bmuMat);
+            bmuArm.position.set(q.cx - 3.8, q.cy - 2.2, 38.5);
+            groups.AIR.add(bmuArm);
+
+            // Flashing Red Aviation Obstruction Beacon
+            const bcn = new THREE.Mesh(new THREE.SphereGeometry(0.35, 10, 10), new THREE.MeshBasicMaterial({{ color: 0xef4444 }}));
+            bcn.position.set(q.cx, q.cy, 39.2);
+            groups.AIR.add(bcn);
           }});
 
-          // 5. Connecting Elevated Glass Skybridges between Towers
-          createPrism("BLD_SKYWALK_NORTH", [[17,26],[23,26],[23,30],[17,30]], 20, 24, 0x38bdf8, 0.8, "COM", 5, {{
+          // 5. Connecting Suspended Glass Skybridges with Structural Steel Warren Truss
+          const trussMat = new THREE.LineBasicMaterial({{ color: 0xf8fafc, linewidth: 2 }});
+
+          // North Skybridge (Tower 1 to Tower 2)
+          createPrism("BLD_SKYWALK_NORTH", [[17,26],[23,26],[23,31],[17,31]], 20, 24.8, 0x38bdf8, 0.8, "COM", 5, {{
             name: "Connecting Skybridge Galleria North (Tower 1 to 2)",
             ulpin: `${{data.base_ulpin}}-COM-F05-SBN1-6`,
-            z: "+20.0m to +24.0m",
-            area: "24 m²",
-            vol: "96 m³",
+            z: "+20.0m to +24.8m",
+            area: "30 m²",
+            vol: "144 m³",
             owner: "Seawoods Common Facilities Custodian",
-            val: "₹ 12.0 Cr"
+            val: "₹ 15.0 Cr"
           }});
 
-          createPrism("BLD_SKYWALK_SOUTH", [[17,10],[23,10],[23,14],[17,14]], 20, 24, 0x38bdf8, 0.8, "COM", 5, {{
+          // Steel Warren Truss Bracing North
+          const tPtsN = [];
+          for (let tx = 17; tx <= 22; tx += 1.5) {{
+            tPtsN.push(new THREE.Vector3(tx, 26.02, 20.0), new THREE.Vector3(tx + 0.75, 26.02, 24.8));
+            tPtsN.push(new THREE.Vector3(tx + 0.75, 26.02, 24.8), new THREE.Vector3(tx + 1.5, 26.02, 20.0));
+            tPtsN.push(new THREE.Vector3(tx, 30.98, 20.0), new THREE.Vector3(tx + 0.75, 30.98, 24.8));
+            tPtsN.push(new THREE.Vector3(tx + 0.75, 30.98, 24.8), new THREE.Vector3(tx + 1.5, 30.98, 20.0));
+          }}
+          groups.COM.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(tPtsN), trussMat));
+
+          // South Skybridge (Tower 3 to Tower 4)
+          createPrism("BLD_SKYWALK_SOUTH", [[17,9],[23,9],[23,14],[17,14]], 20, 24.8, 0x38bdf8, 0.8, "COM", 5, {{
             name: "Connecting Skybridge Galleria South (Tower 3 to 4)",
             ulpin: `${{data.base_ulpin}}-COM-F05-SBS1-7`,
-            z: "+20.0m to +24.0m",
-            area: "24 m²",
-            vol: "96 m³",
+            z: "+20.0m to +24.8m",
+            area: "30 m²",
+            vol: "144 m³",
             owner: "Seawoods Common Facilities Custodian",
-            val: "₹ 12.0 Cr"
+            val: "₹ 15.0 Cr"
           }});
+
+          // Steel Warren Truss Bracing South
+          const tPtsS = [];
+          for (let tx = 17; tx <= 22; tx += 1.5) {{
+            tPtsS.push(new THREE.Vector3(tx, 9.02, 20.0), new THREE.Vector3(tx + 0.75, 9.02, 24.8));
+            tPtsS.push(new THREE.Vector3(tx + 0.75, 9.02, 24.8), new THREE.Vector3(tx + 1.5, 9.02, 20.0));
+            tPtsS.push(new THREE.Vector3(tx, 13.98, 20.0), new THREE.Vector3(tx + 0.75, 13.98, 24.8));
+            tPtsS.push(new THREE.Vector3(tx + 0.75, 13.98, 24.8), new THREE.Vector3(tx + 1.5, 13.98, 20.0));
+          }}
+          groups.COM.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(tPtsS), trussMat));
 
           // 6. Subsurface Commuter Park-and-Ride Basements (-15m to 0m)
           createPrism("SUB_BASE", [[5,5],[35,5],[35,35],[5,35]], -15, 0, 0xf59e0b, 0.85, "SUB", -1, {{
@@ -2189,8 +2371,8 @@ def render_3d_digital_twin_component(
           mesh.position.set(0, 0, zMin);
           mesh.userData = {{ id, originalZ: zMin, stratum, floorIdx, baseOpacity: opacity, baseColor: color, info }};
 
-          // Edge Wireframe
-          const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({{ color: 0xffffff, opacity: 0.3, transparent: true }}));
+          // Edge Wireframe with crisp CAD threshold angle (removes diagonal triangulation lines)
+          const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 15), new THREE.LineBasicMaterial({{ color: 0xffffff, opacity: 0.4, transparent: true }}));
           mesh.add(wire);
 
           groups[stratum].add(mesh);
@@ -2215,7 +2397,7 @@ def render_3d_digital_twin_component(
           mesh.position.set(20, 20, midZ);
           mesh.userData = {{ id, originalZ: midZ, stratum, floorIdx, baseOpacity: opacity, baseColor: color, info }};
 
-          const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({{ color: 0xffffff, opacity: 0.25, transparent: true }}));
+          const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geo, 25), new THREE.LineBasicMaterial({{ color: 0xffffff, opacity: 0.35, transparent: true }}));
           mesh.add(wire);
 
           groups[stratum].add(mesh);
