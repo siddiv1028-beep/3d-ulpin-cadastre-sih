@@ -95,6 +95,30 @@ ARCHETYPE_FLOOR_PROFILES = {
             ("L09", "Rooftop High-Efficiency Solar PV Canopy & Helistop", "AIR", "Renewable & Air Rights", "Renewable Energy Cell & High-Efficiency Solar PV")
         ]
     },
+    'cable_stayed_transit_hub': {
+        'basements': [
+            ("B02", "Heavy Tension Cable Anchorage Vaults & Deep Piled Foundations", "SUB", "Anchor Vault", "HMDA Bridge & Structural Anchorage Directorate"),
+            ("B01", "Automated Transit Park-and-Ride Mobility Concourse", "SUB", "Transit Parking", "Hyderabad Metro Rail Automated Valet & EV Hub")
+        ],
+        'superstructure': [
+            ("G00", "Grand Reception, Lakeside Visitor Atrium & Bus Feeder Interchange", "COM", "Multimodal Terminal", "Hyderabad Metro Rail & HMDA Joint Transit Authority"),
+            ("L01", "Station Concourse, Retail Promenade & Multi-Modal Transfer Lounge", "COM", "Retail Promenade", "Durgam Cheruvu Transit Retail & Concessions Trust"),
+            ("L02", "Metro Rail Transit Platform Hall & Dual Track Corridor", "UTL", "Metro Platform", "Hyderabad Metro Rail Operations Directorate"),
+            ("L03", "Transit Operations Directorate & Panoramic Lakeside Viewing Deck", "BLD", "Operations & Deck", "HMDA Urban Mobility Operations Center"),
+            ("L04", "Aerodynamic Vaulted Spaceframe Canopy & Panoramic Sky Deck", "AIR", "Sky Canopy", "Telangana State Tourism Development Corp (Sky Deck)"),
+            ("L05", "Signature Cable-Stayed Inverted-Y Pylons & Stay-Cable System (45m)", "AIR", "Air Rights & Pylons", "National Highways & Infrastructure Development Authority")
+        ]
+    },
+    'transit_canopy_terminal': {
+        'basements': [
+            ("B01", "Subsurface Commuter Subway Concourse & Baggage Facility", "COM", "Transit Subway", "Central Railway Commuter Services Cell")
+        ],
+        'superstructure': [
+            ("G00", "Suburban EMU Railway Quad Tracks & Island Platforms", "UTL", "Rail Terminal", "Central Railway (Mumbai Suburban EMU Lines)"),
+            ("L01", "Over-Track Passenger Concourse, Turnstiles & Transit Retail", "COM", "Transit Retail", "Indian Railway Stations Development Corp (IRSDC)"),
+            ("L02", "High-Capacity Spaceframe Arched Roof Canopy & Air Rights", "AIR", "Air Rights Canopy", "Ministry of Railways Station Modernization Cell")
+        ]
+    },
     'crystalline_diamond': {
         'basements': [
             ("B03", "Subterranean Utility Tunnel (TUM) Connection & Cooling Intake", "UTL", "Utility Link", "GIFT Urban Infrastructure Ltd (District Cooling Vault)"),
@@ -257,11 +281,17 @@ def segment_building(total_height, base_elevation=0, floor_height=3.2, archetype
             })
             
         # Add superstructure floors
-        num_super = max(1, calculated_slices)
+        if s_list:
+            num_super = len(s_list)
+            step_h = effective_h / max(1, num_super)
+        else:
+            num_super = max(1, calculated_slices)
+            step_h = floor_height
+
         for i in range(num_super):
             f_num = i + 1
-            z_s = base_elevation + (i * floor_height)
-            z_e = z_s + floor_height
+            z_s = base_elevation + (i * step_h)
+            z_e = z_s + step_h
             
             if s_list and i < len(s_list):
                 item = s_list[i]

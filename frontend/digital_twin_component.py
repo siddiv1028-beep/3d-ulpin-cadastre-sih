@@ -842,7 +842,9 @@ def render_3d_digital_twin_component(
             buildUtilityTunnelTrench(data);
           }} else if (arc === 'it_linear_spine') {{
             buildLinearITSpine(data);
-          }} else if (arc === 'transit_canopy_terminal' || arc === 'cable_stayed_transit_hub') {{
+          }} else if (arc === 'cable_stayed_transit_hub') {{
+            buildCableStayedTransitHub(data);
+          }} else if (arc === 'transit_canopy_terminal') {{
             buildTransitTerminalCanopy(data);
           }} else {{
             buildModernParametricTower(data);
@@ -2193,28 +2195,323 @@ def render_3d_digital_twin_component(
           }});
         }}
 
-        // ARCHETYPE 12: Transit Terminal Canopy (Seawoods Transit, Durgam Cheruvu Hub)
-        function buildTransitTerminalCanopy(data) {{
-          // Aerodynamic Tubular Canopy Arches
-          const archGeo = new THREE.TorusGeometry(16, 1.8, 12, 32, Math.PI);
-          archGeo.rotateY(Math.PI / 2);
-          const archMat = new THREE.MeshStandardMaterial({{ color: 0x0284c7, roughness: 0.3, transparent: true, opacity: 0.85 }});
-          
-          [-8, 8].forEach(pos => {{
-            const arch = new THREE.Mesh(archGeo, archMat);
-            arch.position.set(20, 20 + pos, 0);
-            groups.BLD.add(arch);
+        // ARCHETYPE 12A: Durgam Cheruvu Mixed Urban Hub (Hyderabad) - Cable-Stayed Multimodal Transit Terminal
+        function buildCableStayedTransitHub(data) {{
+          // 1. Subsurface Infrastructure (B02 & B01)
+          // B02: Deep Geotechnical Foundation & Heavy Cable Anchorage Vaults (-10m to -5m)
+          createPrism("SUB_B02_ANCHOR", [[4, 6], [36, 6], [36, 34], [4, 34]], -10, -5, 0xd97706, 0.85, "SUB", -2, {{
+            name: "Heavy Tension Cable Anchorage Vaults & Deep Piled Foundations",
+            ulpin: `${{data.base_ulpin}}-SUB-B02-ANC1-8`,
+            z: "-10.0m to -5.0m",
+            area: "896 m²",
+            vol: "4480 m³",
+            owner: "HMDA Bridge & Structural Anchorage Directorate",
+            val: "₹ 85.0 Cr"
           }});
 
-          // Concourse Deck (0 to 6m)
-          createPrism("BLD_CONCOURSE", [[6,8],[34,8],[34,32],[6,32]], 0, 6, 0x38bdf8, 0.8, "BLD", 0, {{
-            name: "High-Capacity Transit Concourse & Platform Hall",
-            ulpin: `${{data.base_ulpin}}-BLD-G00-TT01-4`,
-            z: "0.0m to +6.0m",
-            area: "672 m²",
+          // B01: Multi-Level Automated EV Transit Parking & Ride-Share Mobility Hub (-5m to 0m)
+          createPrism("SUB_B01_PARK", [[4, 6], [36, 6], [36, 34], [4, 34]], -5, 0, 0xf59e0b, 0.85, "SUB", -1, {{
+            name: "Automated Transit Park-and-Ride Mobility Concourse",
+            ulpin: `${{data.base_ulpin}}-SUB-B01-PRK1-5`,
+            z: "-5.0m to 0.0m",
+            area: "896 m²",
+            vol: "4480 m³",
+            owner: "Hyderabad Metro Rail Automated Valet & EV Hub",
+            val: "₹ 65.0 Cr"
+          }});
+
+          // 2. Superstructure Levels (G00, F01, F02, F03)
+          // G00: Grand Reception, Lakeside Visitor Atrium & Bus Feeder Interchange (0 to 4.5m)
+          createPrism("BLD_G00_PLAZA", [[4, 6], [36, 6], [36, 34], [4, 34]], 0, 4.5, 0x0284c7, 0.85, "BLD", 0, {{
+            name: "Grand Reception, Lakeside Visitor Atrium & Bus Feeder Interchange",
+            ulpin: `${{data.base_ulpin}}-BLD-G00-REC1-4`,
+            z: "0.0m to +4.5m",
+            area: "896 m²",
             vol: "4032 m³",
-            owner: "State Multi-Modal Transit Authority & Rail Concessionaire",
-            val: "₹ 160 Cr"
+            owner: "Hyderabad Metro Rail & HMDA Joint Transit Authority",
+            val: "₹ 95.0 Cr"
+          }});
+
+          // South Entrance Cantilevered Passenger Portes-Cochères
+          const canopyMat = new THREE.MeshStandardMaterial({{ color: 0x38bdf8, transparent: true, opacity: 0.85, roughness: 0.15 }});
+          const dropOffCanopy = new THREE.Mesh(new THREE.BoxGeometry(16, 4.5, 0.35), canopyMat);
+          dropOffCanopy.position.set(20, 4.0, 3.8);
+          groups.BLD.add(dropOffCanopy);
+
+          // F01: Station Concourse, Retail Promenade & Multi-Modal Transfer Lounge (4.5m to 9.0m)
+          createPrism("BLD_F01_CONCOURSE", [[5, 7], [35, 7], [35, 33], [5, 33]], 4.5, 9.0, 0x0369a1, 0.85, "BLD", 1, {{
+            name: "Station Concourse, Retail Promenade & Multi-Modal Transfer Lounge",
+            ulpin: `${{data.base_ulpin}}-BLD-F01-CON1-9`,
+            z: "+4.5m to +9.0m",
+            area: "780 m²",
+            vol: "3510 m³",
+            owner: "Durgam Cheruvu Transit Retail & Concessions Trust",
+            val: "₹ 75.0 Cr"
+          }});
+
+          // Polished horizontal silver spandrels separating levels
+          [4.5, 9.0, 14.0].forEach(sz => {{
+            const spMesh = new THREE.Mesh(
+              new THREE.BoxGeometry(32.4, 28.4, 0.3),
+              new THREE.MeshStandardMaterial({{ color: 0xe2e8f0, metalness: 0.8, roughness: 0.2 }})
+            );
+            spMesh.position.set(20, 20, sz);
+            groups.BLD.add(spMesh);
+          }});
+
+          // F02: Metro Rail Transit Platform Hall & Dual Track Corridor (9.0m to 14.0m)
+          createPrism("BLD_F02_PLATFORM", [[6, 8], [34, 8], [34, 32], [6, 32]], 9.0, 14.0, 0x38bdf8, 0.8, "COM", 2, {{
+            name: "Metro Rail Transit Platform Hall & Dual Track Corridor",
+            ulpin: `${{data.base_ulpin}}-COM-F02-PLT1-2`,
+            z: "+9.0m to +14.0m",
+            area: "672 m²",
+            vol: "3360 m³",
+            owner: "Hyderabad Metro Rail Operations Directorate",
+            val: "₹ 90.0 Cr"
+          }});
+
+          // Dual Metro Track Rails inside the platform hall
+          const railMat = new THREE.MeshStandardMaterial({{ color: 0x334155, metalness: 0.9, roughness: 0.2 }});
+          [16, 17.5, 22.5, 24].forEach(ry => {{
+            const rail = new THREE.Mesh(new THREE.BoxGeometry(32, 0.15, 0.25), railMat);
+            rail.position.set(20, ry, 9.4);
+            groups.COM.add(rail);
+          }});
+
+          // F03: Transit Operations Directorate & Panoramic Lakeside Viewing Deck (14.0m to 18.5m)
+          createPrism("BLD_F03_OPERATIONS", [[8, 10], [32, 10], [32, 30], [8, 30]], 14.0, 18.5, 0x06b6d4, 0.82, "BLD", 3, {{
+            name: "Transit Operations Directorate & Panoramic Lakeside Viewing Deck",
+            ulpin: `${{data.base_ulpin}}-BLD-F03-DIR1-7`,
+            z: "+14.0m to +18.5m",
+            area: "480 m²",
+            vol: "2160 m³",
+            owner: "HMDA Urban Mobility Operations Center",
+            val: "₹ 55.0 Cr"
+          }});
+
+          // 3. Vaulted Spaceframe Canopy Arches over Station (Z = 18.5m to 24.0m)
+          // Translucent glazed roof covering concourse and platform (resting logically on top of the building!)
+          const canopyShape = new THREE.Shape();
+          canopyShape.moveTo(6, 18.5);
+          canopyShape.quadraticCurveTo(20, 24.0, 34, 18.5);
+          canopyShape.lineTo(34, 18.8);
+          canopyShape.quadraticCurveTo(20, 24.3, 6, 18.8);
+          canopyShape.closePath();
+
+          const canopyRoofGeo = new THREE.ExtrudeGeometry(canopyShape, {{ steps: 1, depth: 22, bevelEnabled: false }});
+          canopyRoofGeo.rotateX(Math.PI / 2);
+          const canopyRoofMat = new THREE.MeshStandardMaterial({{
+            color: 0x38bdf8,
+            roughness: 0.2,
+            metalness: 0.4,
+            transparent: true,
+            opacity: 0.65,
+            side: THREE.DoubleSide
+          }});
+          const canopyRoof = new THREE.Mesh(canopyRoofGeo, canopyRoofMat);
+          canopyRoof.position.set(0, 31, 0);
+          groups.AIR.add(canopyRoof);
+
+          // Structural steel arch ribs (5 spaceframe ribs across length)
+          const ribMat = new THREE.MeshStandardMaterial({{ color: 0xffffff, metalness: 0.85, roughness: 0.2 }});
+          [10, 15, 20, 25, 30].forEach(py => {{
+            const ribCurve = new THREE.QuadraticBezierCurve3(
+              new THREE.Vector3(6, py, 18.5),
+              new THREE.Vector3(20, py, 24.5),
+              new THREE.Vector3(34, py, 18.5)
+            );
+            const ribGeo = new THREE.TubeGeometry(ribCurve, 20, 0.25, 8, false);
+            const ribMesh = new THREE.Mesh(ribGeo, ribMat);
+            groups.AIR.add(ribMesh);
+          }});
+
+          // 4. The Signature Durgam Cheruvu Inverted-Y Cable-Stayed Pylons (Rising from Ground Z=0 to 45m MSL)
+          // Flanking twin inclined concrete legs meeting at cross-beam Z=28m, then single pylon mast to Z=45m
+          const pylonMat = new THREE.MeshStandardMaterial({{ color: 0xf1f5f9, roughness: 0.35, metalness: 0.3 }});
+          const accentMat = new THREE.MeshStandardMaterial({{ color: 0x0284c7, metalness: 0.5, roughness: 0.3 }});
+
+          // West Pylon (at x = 20, y = 5)
+          // South Leg
+          const legSGeo = new THREE.CylinderGeometry(0.7, 1.2, 29, 16);
+          legSGeo.rotateZ(0.18);
+          const legS = new THREE.Mesh(legSGeo, pylonMat);
+          legS.position.set(17.5, 5, 14.5);
+          groups.AIR.add(legS);
+
+          // North Leg
+          const legNGeo = new THREE.CylinderGeometry(0.7, 1.2, 29, 16);
+          legNGeo.rotateZ(-0.18);
+          const legN = new THREE.Mesh(legNGeo, pylonMat);
+          legN.position.set(22.5, 5, 14.5);
+          groups.AIR.add(legN);
+
+          // Pylon Cross-Strut Bridge at Z = 28m
+          const crossBeam = new THREE.Mesh(new THREE.BoxGeometry(4.5, 1.6, 1.2), accentMat);
+          crossBeam.position.set(20, 5, 28);
+          groups.AIR.add(crossBeam);
+
+          // Upper Single Pylon Mast (Z = 28m to 45m)
+          const mastGeo = new THREE.CylinderGeometry(0.6, 1.1, 17, 16);
+          const mast = new THREE.Mesh(mastGeo, pylonMat);
+          mast.position.set(20, 5, 36.5);
+          groups.AIR.add(mast);
+
+          // Top Beacon Lantern (Aviation Obstruction Beacon at +45m)
+          const beaconGeo = new THREE.CylinderGeometry(0.3, 0.4, 1.2, 12);
+          const beaconMat = new THREE.MeshBasicMaterial({{ color: 0xef4444 }});
+          const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+          beacon.position.set(20, 5, 45.4);
+          groups.AIR.add(beacon);
+
+          // Symmetrical East Pylon (at x = 20, y = 35)
+          const legS2 = new THREE.Mesh(legSGeo, pylonMat);
+          legS2.position.set(17.5, 35, 14.5);
+          groups.AIR.add(legS2);
+
+          const legN2 = new THREE.Mesh(legNGeo, pylonMat);
+          legN2.position.set(22.5, 35, 14.5);
+          groups.AIR.add(legN2);
+
+          const crossBeam2 = new THREE.Mesh(new THREE.BoxGeometry(4.5, 1.6, 1.2), accentMat);
+          crossBeam2.position.set(20, 35, 28);
+          groups.AIR.add(crossBeam2);
+
+          const mast2 = new THREE.Mesh(mastGeo, pylonMat);
+          mast2.position.set(20, 35, 36.5);
+          groups.AIR.add(mast2);
+
+          const beacon2 = new THREE.Mesh(beaconGeo, beaconMat);
+          beacon2.position.set(20, 35, 45.4);
+          groups.AIR.add(beacon2);
+
+          // 5. Authentic Fan Array of High-Tensile Steel Stay Cables
+          // Radiating from Upper Pylons (Z = 32m to 43m) down to structural deck anchorages (Z = 14m)
+          const cableMat = new THREE.LineBasicMaterial({{ color: 0xf8fafc, linewidth: 2, transparent: true, opacity: 0.85 }});
+          const cableGeo = new THREE.BufferGeometry();
+          const cablePts = [];
+
+          const anchorX = [6, 10, 14, 17, 23, 26, 30, 34];
+          const stayZ = [32, 35, 38, 41, 41, 38, 35, 32];
+
+          // South Pylon Cables (y = 5)
+          for (let i = 0; i < anchorX.length; i++) {{
+            const ax = anchorX[i];
+            const sz = stayZ[i];
+            cablePts.push(new THREE.Vector3(ax, 7.5, 14.0));
+            cablePts.push(new THREE.Vector3(20, 5.0, sz));
+          }}
+
+          // North Pylon Cables (y = 35)
+          for (let i = 0; i < anchorX.length; i++) {{
+            const ax = anchorX[i];
+            const sz = stayZ[i];
+            cablePts.push(new THREE.Vector3(ax, 32.5, 14.0));
+            cablePts.push(new THREE.Vector3(20, 35.0, sz));
+          }}
+
+          cableGeo.setFromPoints(cablePts);
+          const stayCableLines = new THREE.LineSegments(cableGeo, cableMat);
+          groups.AIR.add(stayCableLines);
+
+          // Register Pylon & Stay Array as Interactive Cadastral Volume (Air Rights L05)
+          createPrism("AIR_PYLON", [[16, 4], [24, 4], [24, 36], [16, 36]], 24.0, 45.0, 0x0284c7, 0.25, "AIR", 4, {{
+            name: "Signature Cable-Stayed Inverted-Y Pylons & Stay-Cable System (45m MSL)",
+            ulpin: `${{data.base_ulpin}}-AIR-L05-PYL1-P`,
+            z: "+24.0m to +45.0m",
+            area: "256 m²",
+            vol: "5376 m³",
+            owner: "National Highways & Infrastructure Development Authority",
+            val: "₹ 80.0 Cr"
+          }});
+        }}
+
+        // ARCHETYPE 12B: Seawoods Central Rail Terminal (Navi Mumbai) - Arched Spaceframe Transit Terminal
+        function buildTransitTerminalCanopy(data) {{
+          // 1. Subsurface Concourse & Pedestrian Subway (-6m to 0m)
+          createPrism("SUB_B01_SUBWAY", [[4, 6], [36, 6], [36, 34], [4, 34]], -6.0, 0, 0xf59e0b, 0.85, "SUB", -1, {{
+            name: "Subsurface Commuter Subway Concourse & Baggage Facility",
+            ulpin: `${{data.base_ulpin}}-SUB-B01-SBW1-4`,
+            z: "-6.0m to 0.0m",
+            area: "896 m²",
+            vol: "5376 m³",
+            owner: "Central Railway Commuter Services Cell",
+            val: "₹ 45.0 Cr"
+          }});
+
+          // 2. Ground Level: Suburban Railway Tracks, Quad Platforms & Ticket Hall (0m to 5m)
+          createPrism("BLD_G00_TRACKS", [[4, 6], [36, 6], [36, 34], [4, 34]], 0, 5.0, 0x0284c7, 0.85, "BLD", 0, {{
+            name: "Suburban EMU Railway Quad Tracks & Island Platforms",
+            ulpin: `${{data.base_ulpin}}-BLD-G00-TRK1-2`,
+            z: "0.0m to +5.0m",
+            area: "896 m²",
+            vol: "4480 m³",
+            owner: "Central Railway (Mumbai Suburban EMU Lines)",
+            val: "₹ 110 Cr"
+          }});
+
+          // Quad Steel Track Rails running along X-axis
+          const railMat = new THREE.MeshStandardMaterial({{ color: 0x334155, metalness: 0.9, roughness: 0.2 }});
+          [10, 12, 18, 20, 26, 28].forEach(ry => {{
+            const rail = new THREE.Mesh(new THREE.BoxGeometry(32, 0.15, 0.2), railMat);
+            rail.position.set(20, ry, 0.2);
+            groups.BLD.add(rail);
+          }});
+
+          // 3. Level 1: Over-Track Passenger Concourse, Turnstiles & Transit Retail (5m to 10m)
+          createPrism("BLD_F01_CONCOURSE", [[6, 8], [34, 8], [34, 32], [6, 32]], 5.0, 10.0, 0x38bdf8, 0.8, "COM", 1, {{
+            name: "Over-Track Passenger Concourse, Turnstiles & Transit Retail",
+            ulpin: `${{data.base_ulpin}}-COM-F01-CON1-6`,
+            z: "+5.0m to +10.0m",
+            area: "672 m²",
+            vol: "3360 m³",
+            owner: "Indian Railway Stations Development Corp (IRSDC)",
+            val: "₹ 75.0 Cr"
+          }});
+
+          // 4. High-Capacity Glazed Barrel Canopy & Spaceframe Roof (Z = 10m to 16.5m)
+          const canopyShape = new THREE.Shape();
+          canopyShape.moveTo(4, 10.0);
+          canopyShape.quadraticCurveTo(20, 16.5, 36, 10.0);
+          canopyShape.lineTo(36, 10.3);
+          canopyShape.quadraticCurveTo(20, 16.8, 4, 10.3);
+          canopyShape.closePath();
+
+          const roofGeo = new THREE.ExtrudeGeometry(canopyShape, {{ steps: 1, depth: 26, bevelEnabled: false }});
+          roofGeo.rotateX(Math.PI / 2);
+          const roofMat = new THREE.MeshStandardMaterial({{
+            color: 0x0284c7,
+            roughness: 0.25,
+            metalness: 0.35,
+            transparent: true,
+            opacity: 0.72,
+            side: THREE.DoubleSide
+          }});
+          const roofMesh = new THREE.Mesh(roofGeo, roofMat);
+          roofMesh.position.set(0, 33, 0);
+          groups.AIR.add(roofMesh);
+
+          // Structural white steel lattice spaceframe arch ribs (6 ribs)
+          const ribMat = new THREE.MeshStandardMaterial({{ color: 0xffffff, metalness: 0.8, roughness: 0.2 }});
+          [8, 13, 18, 23, 28, 33].forEach(py => {{
+            const ribCurve = new THREE.QuadraticBezierCurve3(
+              new THREE.Vector3(4, py, 10.0),
+              new THREE.Vector3(20, py, 16.9),
+              new THREE.Vector3(36, py, 10.0)
+            );
+            const ribGeo = new THREE.TubeGeometry(ribCurve, 24, 0.25, 8, false);
+            const ribMesh = new THREE.Mesh(ribGeo, ribMat);
+            groups.AIR.add(ribMesh);
+          }});
+
+          // Register Air Rights Roof
+          createPrism("AIR_ROOF", [[6, 8], [34, 8], [34, 32], [6, 32]], 10.0, 16.5, 0x0284c7, 0.2, "AIR", 2, {{
+            name: "High-Capacity Spaceframe Arched Roof Canopy & Air Rights",
+            ulpin: `${{data.base_ulpin}}-AIR-L02-ROOF-7`,
+            z: "+10.0m to +16.5m",
+            area: "672 m²",
+            vol: "4368 m³",
+            owner: "Ministry of Railways Station Modernization Cell",
+            val: "₹ 35.0 Cr"
           }});
         }}
 
