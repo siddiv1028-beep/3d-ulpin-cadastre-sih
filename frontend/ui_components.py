@@ -1,6 +1,5 @@
 import streamlit as st
 from core.certificate_generator import generate_qr_code_image, generate_title_hash
-from data.blueprints_and_imagery import get_property_blueprint
 
 def inject_custom_theme(theme="dark"):
     """
@@ -494,42 +493,6 @@ def render_property_spec_card(prop, theme="dark"):
             </div>
         </div>
     """, unsafe_allow_html=True)
-
-    # Real Architectural Blueprint & Real Photographic Imagery Section
-    bp = get_property_blueprint(prop.get('property_id', 101))
-    with st.expander(f"📐 Real Architectural Blueprint & Site Imagery &bull; #{prop.get('property_id')}", expanded=False):
-        t_bp, t_img, t_spec = st.tabs(["📐 CAD Blueprint (SVG)", "📸 Authentic Reference Imagery", "🏗️ Structural Specs"])
-        with t_bp:
-            st.markdown(f"<div style='font-size: 0.8rem; font-weight: 700; color: #38bdf8; margin-bottom: 6px;'>{bp.get('title', 'Architectural Blueprint')}</div>", unsafe_allow_html=True)
-            st.markdown(bp.get('blueprint_svg', ''), unsafe_allow_html=True)
-            dims = bp.get('dimensions', {})
-            st.markdown(f"""
-                <div style='display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; margin-top: 8px; font-size: 0.75rem; background: rgba(15,23,42,0.6); padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.06);'>
-                    <div><span style='color: #94a3b8;'>Length:</span> <b>{dims.get('length_m', 80)}m</b></div>
-                    <div><span style='color: #94a3b8;'>Width:</span> <b>{dims.get('width_m', 60)}m</b></div>
-                    <div><span style='color: #94a3b8;'>Height:</span> <b>{dims.get('height_m', 100)}m</b></div>
-                </div>
-            """, unsafe_allow_html=True)
-        with t_img:
-            st.markdown(f"""
-                <div style='border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1);'>
-                    <img src='{bp.get("photo_url")}' style='width: 100%; height: 190px; object-fit: cover; display: block;' />
-                    <div style='padding: 8px 10px; background: rgba(15,23,42,0.85); font-size: 0.75rem; color: #cbd5e1;'>
-                        <b>{bp.get("photo_caption")}</b>
-                    </div>
-                </div>
-            """, unsafe_allow_html=True)
-        with t_spec:
-            st.markdown(f"""
-                <div style='font-size: 0.78rem; line-height: 1.8; color: #cbd5e1; background: rgba(15,23,42,0.5); padding: 10px; border-radius: 8px;'>
-                    <div><span style='color: #94a3b8;'>Principal Architect:</span> <b>{bp.get('architect', 'Municipal Master Architect')}</b></div>
-                    <div><span style='color: #94a3b8;'>Structural Engineer:</span> <b>{bp.get('engineer', 'National Civil Engineering Board')}</b></div>
-                    <div><span style='color: #94a3b8;'>Year Built:</span> <b>{bp.get('year_built', 2018)}</b></div>
-                    <div><span style='color: #94a3b8;'>Structural System:</span> <b>{bp.get('structural_system', 'Reinforced Concrete Framework')}</b></div>
-                    <div><span style='color: #94a3b8;'>FSI / FAR Consumed:</span> <b>{bp.get('fsi_far', '3.50')}</b></div>
-                    <div><span style='color: #94a3b8;'>RERA / Sanction ID:</span> <code style='color: #38bdf8;'>{bp.get('rera_id', 'RERA-CAD-2026')}</code></div>
-                </div>
-            """, unsafe_allow_html=True)
 
 def render_vertical_stack(floors, prop_data, theme="dark"):
     """

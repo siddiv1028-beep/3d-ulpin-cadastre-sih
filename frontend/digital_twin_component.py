@@ -11,7 +11,6 @@ Renders the complete GeoAadhaar-3D platform inside Streamlit matching the offici
 
 import json
 import streamlit.components.v1 as components
-from data.blueprints_and_imagery import get_property_blueprint
 
 def render_3d_digital_twin_component(
     property_name="Seawoods Grand Central",
@@ -39,7 +38,6 @@ def render_3d_digital_twin_component(
     archetype_title = archetype.replace("_", " ").title()
     elev_str = f"Depth: {base_elevation}m to {base_elevation + total_height}m" if base_elevation < 0 else f"+{total_height}m MSL"
 
-    bp = get_property_blueprint(property_id)
     building_meta_json = json.dumps({
         "id": property_id,
         "name": property_name,
@@ -56,16 +54,7 @@ def render_3d_digital_twin_component(
         "subsurface_infra": subsurface_infra,
         "lat": lat,
         "lon": lon,
-        "building_type": building_type,
-        "blueprint_title": bp.get("title", ""),
-        "photo_url": bp.get("photo_url", ""),
-        "photo_caption": bp.get("photo_caption", ""),
-        "architect": bp.get("architect", ""),
-        "engineer": bp.get("engineer", ""),
-        "dimensions": bp.get("dimensions", {}),
-        "fsi_far": bp.get("fsi_far", "3.50"),
-        "rera_id": bp.get("rera_id", ""),
-        "blueprint_svg": bp.get("blueprint_svg", "")
+        "building_type": building_type
     })
 
     html_code = f"""
@@ -413,9 +402,6 @@ def render_3d_digital_twin_component(
           <button class="tab-btn active" id="tab-twin" onclick="switchView('twin')">
             <i data-lucide="box" class="w-3 h-3"></i> 3D Twin
           </button>
-          <button class="tab-btn" id="tab-bp" onclick="openBlueprintModal()" title="View Real Architectural CAD Blueprint & Photos">
-            <i data-lucide="compass" class="w-3 h-3"></i> Real Blueprint
-          </button>
           <button class="tab-btn" id="tab-gen" onclick="switchView('gen')">
             <i data-lucide="qr-code" class="w-3 h-3"></i> 3D ULPIN
           </button>
@@ -706,41 +692,6 @@ def render_3d_digital_twin_component(
         </div>
       </div>
 
-      <!-- Real Architectural Blueprint & Reference Imagery Modal -->
-      <div id="modal-blueprint" class="modal-backdrop">
-        <div class="glass p-5 rounded-xl border border-white/20 max-w-2xl w-full max-h-[85vh] overflow-y-auto text-xs relative">
-          <div class="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
-            <div class="flex items-center gap-2">
-              <span class="p-1 rounded bg-sky-500/20 text-sky-400 font-bold">📐 CAD BLUEPRINT</span>
-              <span class="font-bold text-white text-sm" id="bp-modal-title"></span>
-            </div>
-            <button onclick="closeBlueprintModal()" class="text-slate-400 hover:text-white p-1 rounded hover:bg-white/10 text-base font-bold">&times;</button>
-          </div>
-          
-          <!-- Blueprint Vector SVG Container -->
-          <div id="bp-svg-container" class="rounded-lg overflow-hidden border border-white/10 bg-slate-950 p-2 mb-3"></div>
-
-          <!-- Reference Image & Engineering Specs -->
-          <div class="grid grid-cols-2 gap-3 mb-2">
-            <div class="rounded-lg overflow-hidden border border-white/10 bg-slate-900">
-              <img id="bp-modal-img" src="" class="w-full h-36 object-cover" />
-              <div id="bp-modal-caption" class="p-2 text-[10px] text-slate-300 font-semibold bg-slate-950"></div>
-            </div>
-            <div class="bg-slate-900/80 p-3 rounded-lg border border-white/10 flex flex-col justify-between text-[11px] leading-relaxed">
-              <div><span class="text-slate-400">Architect:</span> <b id="bp-modal-arch" class="text-white"></b></div>
-              <div><span class="text-slate-400">Structural Eng:</span> <b id="bp-modal-eng" class="text-white"></b></div>
-              <div><span class="text-slate-400">Dimensions:</span> <b id="bp-modal-dim" class="text-sky-400 font-mono"></b></div>
-              <div><span class="text-slate-400">FSI / FAR Consumed:</span> <b id="bp-modal-fsi" class="text-emerald-400"></b></div>
-              <div><span class="text-slate-400">RERA Sanction:</span> <code id="bp-modal-rera" class="text-amber-400 text-[10px]"></code></div>
-            </div>
-          </div>
-          
-          <div class="flex justify-end mt-3 pt-2 border-t border-white/10">
-            <button onclick="closeBlueprintModal()" class="btn-primary text-xs py-1.5 px-4">Close Blueprint</button>
-          </div>
-        </div>
-      </div>
-
       <script>
         const BUILDING_DATA = {building_meta_json};
         const container = document.getElementById('webgl-container');
@@ -749,24 +700,6 @@ def render_3d_digital_twin_component(
         let selectedMesh = null;
         let isClashActive = false;
         let currentChart = null;
-
-        function openBlueprintModal() {{
-          document.getElementById('bp-modal-title').textContent = BUILDING_DATA.blueprint_title || (BUILDING_DATA.name + ' Blueprint');
-          document.getElementById('bp-svg-container').innerHTML = BUILDING_DATA.blueprint_svg || '';
-          document.getElementById('bp-modal-img').src = BUILDING_DATA.photo_url || '';
-          document.getElementById('bp-modal-caption').textContent = BUILDING_DATA.photo_caption || '';
-          document.getElementById('bp-modal-arch').textContent = BUILDING_DATA.architect || 'Municipal Master Architect';
-          document.getElementById('bp-modal-eng').textContent = BUILDING_DATA.engineer || 'National Civil Engineering Board';
-          const d = BUILDING_DATA.dimensions || {{}};
-          document.getElementById('bp-modal-dim').textContent = `${{d.length_m || 80}}m (L) x ${{d.width_m || 60}}m (W) x ${{d.height_m || 100}}m (H)`;
-          document.getElementById('bp-modal-fsi').textContent = BUILDING_DATA.fsi_far || '3.50';
-          document.getElementById('bp-modal-rera').textContent = BUILDING_DATA.rera_id || 'RERA-CAD-2026';
-          document.getElementById('modal-blueprint').classList.add('active');
-        }}
-
-        function closeBlueprintModal() {{
-          document.getElementById('modal-blueprint').classList.remove('active');
-        }}
 
         // Group definitions
         const groups = {{
@@ -1678,35 +1611,21 @@ def render_3d_digital_twin_component(
               }});
             }}
 
-            // Tower Rooftop Mechanical Penthouse (MEP Level, Z = 34 to 38.5m)
-            const roGeo = new THREE.BoxGeometry(7, 8, 3.2);
-            const roMat = new THREE.MeshStandardMaterial({{ color: 0x334155, roughness: 0.6 }});
-            const roMesh = new THREE.Mesh(roGeo, roMat);
-            roMesh.position.set(q.cx, q.cy, 35.6);
-            groups.AIR.add(roMesh);
+            // Sleek Architectural Glass Crown Parapet (matching azure glass facade)
+            const crownMesh = new THREE.Mesh(
+              new THREE.BoxGeometry(12.2, 13.2, 1.0),
+              new THREE.MeshStandardMaterial({{ color: 0x38bdf8, transparent: true, opacity: 0.8, roughness: 0.15 }})
+            );
+            crownMesh.position.set(q.cx, q.cy, 34.5);
+            groups.BLD.add(crownMesh);
 
-            // Dual Rooftop Industrial Cooling Towers
-            [-1.8, 1.8].forEach(ctOffset => {{
-              const ctGeo = new THREE.CylinderGeometry(1.2, 1.2, 1.8, 16);
-              ctGeo.rotateX(Math.PI / 2);
-              const ctMesh = new THREE.Mesh(ctGeo, new THREE.MeshStandardMaterial({{ color: 0x475569, metalness: 0.7 }}));
-              ctMesh.position.set(q.cx + ctOffset, q.cy + 2.2, 38.0);
-              groups.AIR.add(ctMesh);
-            }});
-
-            // BMU Window-Washing Crane Rig with boom
-            const bmuMat = new THREE.MeshStandardMaterial({{ color: 0xfacc15, roughness: 0.4 }});
-            const bmuBase = new THREE.Mesh(new THREE.BoxGeometry(1.0, 1.0, 1.2), bmuMat);
-            bmuBase.position.set(q.cx - 2.0, q.cy - 2.2, 37.8);
-            groups.AIR.add(bmuBase);
-            const bmuArm = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.25, 0.25), bmuMat);
-            bmuArm.position.set(q.cx - 3.8, q.cy - 2.2, 38.5);
-            groups.AIR.add(bmuArm);
-
-            // Flashing Red Aviation Obstruction Beacon
-            const bcn = new THREE.Mesh(new THREE.SphereGeometry(0.35, 10, 10), new THREE.MeshBasicMaterial({{ color: 0xef4444 }}));
-            bcn.position.set(q.cx, q.cy, 39.2);
-            groups.AIR.add(bcn);
+            // Crisp White Architectural Perimeter Railing Trim
+            const crownTrim = new THREE.Mesh(
+              new THREE.BoxGeometry(12.35, 13.35, 0.12),
+              new THREE.MeshStandardMaterial({{ color: 0xffffff, roughness: 0.2, metalness: 0.5 }})
+            );
+            crownTrim.position.set(q.cx, q.cy, 35.05);
+            groups.BLD.add(crownTrim);
           }});
 
           // 5. Connecting Suspended Glass Skybridges with Structural Steel Warren Truss
