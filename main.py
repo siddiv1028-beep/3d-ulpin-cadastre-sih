@@ -214,6 +214,71 @@ else:
     display_df = df.copy()
 
 # -------------------------------------------------------------
+# INTERACTIVE 3D MAP CLICK HANDLER & REAL-TIME ULPIN SYNCHRONIZER
+# -------------------------------------------------------------
+def extract_clicked_property_id(deck_state, reference_df):
+    """
+    Extracts the property ID of a 3D parcel polygon, pin marker, or label
+    selected via an interactive click on the Deck.gl map.
+    Supports both PydeckState objects and dictionary payloads.
+    """
+    if not deck_state:
+        return None
+    selection = getattr(deck_state, "selection", None)
+    if selection is None and isinstance(deck_state, dict):
+        selection = deck_state.get("selection")
+    if not selection:
+        return None
+
+    # 1. Inspect clicked objects dictionary
+    objects_dict = getattr(selection, "objects", None)
+    if objects_dict is None and isinstance(selection, dict):
+        objects_dict = selection.get("objects", {})
+
+    if objects_dict and isinstance(objects_dict, dict):
+        for layer_name, items in objects_dict.items():
+            if items and isinstance(items, list) and len(items) > 0:
+                first_item = items[0]
+                if isinstance(first_item, dict) and "property_id" in first_item:
+                    try:
+                        return int(first_item["property_id"])
+                    except (ValueError, TypeError):
+                        pass
+
+    # 2. Inspect clicked indices dictionary as fallback
+    indices_dict = getattr(selection, "indices", None)
+    if indices_dict is None and isinstance(selection, dict):
+        indices_dict = selection.get("indices", {})
+
+    if indices_dict and isinstance(indices_dict, dict):
+        for layer_name, indices in indices_dict.items():
+            if indices and isinstance(indices, list) and len(indices) > 0:
+                idx = indices[0]
+                if 0 <= idx < len(reference_df):
+                    try:
+                        return int(reference_df.iloc[idx]["property_id"])
+                    except Exception:
+                        pass
+    return None
+
+# Process any building clicked on the Deck.gl map
+if "main_deck_map" in st.session_state:
+    clicked_pid = extract_clicked_property_id(st.session_state["main_deck_map"], df)
+    if clicked_pid and clicked_pid in df["property_id"].values:
+        st.session_state["selected_prop_id"] = clicked_pid
+        st.session_state["parcel_selector_box"] = clicked_pid
+        st.session_state["force_twin_view"] = True
+        st.session_state["active_twin_prop"] = clicked_pid
+        st.session_state["twin_studio_toggle_widget"] = True
+        st.session_state["fly_camera_active"] = True
+    st.session_state.pop("main_deck_map", None)
+
+if searched_prop_id and searched_prop_id in df["property_id"].values:
+    if st.session_state.get("selected_prop_id") != searched_prop_id:
+        st.session_state["selected_prop_id"] = searched_prop_id
+        st.session_state["parcel_selector_box"] = searched_prop_id
+
+# -------------------------------------------------------------
 # MAIN WORKSPACE: 3D MAP ON LEFT, ROLE-BASED PANEL ON RIGHT
 # -------------------------------------------------------------
 is_twin_full = st.session_state.get("twin_fullwidth_toggle", False)
@@ -279,8 +344,11 @@ with col_panel:
         city = row.get('city', 'India')
         return f"#{pid} - {name} ({city})"
 
+    target_pid = st.session_state.get("selected_prop_id", searched_prop_id)
     default_index = 0
-    if searched_prop_id and searched_prop_id in parcel_options:
+    if target_pid and target_pid in parcel_options:
+        default_index = parcel_options.index(target_pid)
+    elif searched_prop_id and searched_prop_id in parcel_options:
         default_index = parcel_options.index(searched_prop_id)
 
     selected_prop_id = st.selectbox(
@@ -288,8 +356,12 @@ with col_panel:
         options=parcel_options,
         index=default_index,
         format_func=format_parcel_option,
-        label_visibility="collapsed"
+        label_visibility="collapsed",
+        key="parcel_selector_box"
     )
+    st.session_state["selected_prop_id"] = selected_prop_id
+    if st.session_state.get("force_twin_view", False):
+        st.session_state["active_twin_prop"] = selected_prop_id
 
     prop_data = df[df["property_id"] == selected_prop_id].iloc[0]
 
@@ -396,6 +468,7 @@ with col_panel:
         if st.button(btn_label, use_container_width=True):
             st.session_state["active_twin_prop"] = selected_prop_id
             st.session_state["force_twin_view"] = True
+            st.session_state["twin_studio_toggle_widget"] = True
             st.rerun()
 
         selected_floor_dict = next(f for f in floors if f['floor_number'] == selected_floor_num)
@@ -662,6 +735,26 @@ with col_panel:
 # Render the 3D Map or Three.js Digital Twin in the map column
 with col_map:
     if launch_twin or ("3D WebGL" in selected_role):
+        c_hdr_l, c_hdr_r = st.columns([3.2, 1.0])
+        with c_hdr_l:
+            st.markdown(f"""
+                <div style="display: flex; align-items: center; gap: 10px; background: rgba(14, 165, 233, 0.12); border: 1px solid rgba(14, 165, 233, 0.28); border-radius: 8px; padding: 7px 14px; margin-bottom: 8px;">
+                    <span style="font-size: 1.2rem;">🏢</span>
+                    <div>
+                        <span style="font-weight: 700; color: #38bdf8; font-size: 0.88rem;">3D Digital Twin Active:</span>
+                        <span style="font-weight: 600; color: #f1f5f9; font-size: 0.88rem;">{prop_data['name']} (#{selected_prop_id})</span>
+                        <span style="color: #94a3b8; font-size: 0.78rem;">&bull; {prop_data.get('city', 'India')} &bull; {prop_data.get('total_height', 0)}m</span>
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
+        with c_hdr_r:
+            if st.button("⬅️ Return to Map", use_container_width=True, key="btn_return_to_map", help="Return to full geographic 3D Cadastral Map"):
+                st.session_state["force_twin_view"] = False
+                st.session_state["twin_studio_toggle_widget"] = False
+                st.session_state["active_twin_prop"] = None
+                st.session_state.pop("main_deck_map", None)
+                st.rerun()
+
         base_u_val = generate_ulpin(
             int(prop_data.get("state_code", 27)),
             int(prop_data.get("dist_code", 21)),
@@ -697,7 +790,25 @@ with col_map:
             map_theme=selected_theme,
             show_labels=show_gmaps_labels
         )
-        map_placeholder.pydeck_chart(deck, use_container_width=True)
+        map_event = map_placeholder.pydeck_chart(
+            deck,
+            use_container_width=True,
+            on_select="rerun",
+            selection_mode="single-object",
+            key="main_deck_map"
+        )
+        if map_event:
+            c_pid = extract_clicked_property_id(map_event, filtered_map_df)
+            if c_pid and c_pid in df["property_id"].values:
+                if st.session_state.get("selected_prop_id") != c_pid or not st.session_state.get("force_twin_view"):
+                    st.session_state["selected_prop_id"] = c_pid
+                    st.session_state["parcel_selector_box"] = c_pid
+                    st.session_state["force_twin_view"] = True
+                    st.session_state["active_twin_prop"] = c_pid
+                    st.session_state["twin_studio_toggle_widget"] = True
+                    st.session_state["fly_camera_active"] = True
+                    st.session_state.pop("main_deck_map", None)
+                    st.rerun()
 
 # -------------------------------------------------------------
 # BOTTOM DRAWER: MASTER CADASTRAL DATABASE & NATIONAL AUDIT

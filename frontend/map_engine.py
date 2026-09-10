@@ -580,6 +580,9 @@ def render_3d_map(df, selected_region="🇮🇳 Pan-India (National Cadastre)", 
         <div style="font-size: 11px; margin-top: 5px; padding-top: 4px; border-top: 1px solid rgba(255,255,255,0.1); color: #38bdf8;">
             <b>₹{valuation_cr} Cr</b> &bull; <span style="color: #10b981;">{status}</span>
         </div>
+        <div style="margin-top: 5px; font-size: 10.5px; font-weight: 700; color: #38bdf8; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.3); padding: 3px 6px; border-radius: 4px; text-align: center;">
+            👆 Click building to inspect details & open 3D Digital Twin
+        </div>
     </div>
     """
 
