@@ -747,19 +747,74 @@ def render_3d_digital_twin_component(
           }}
 
           // Sun Lighting - Simulates Real-Time 10:45 AM Morning Sun Angle
-          const ambient = new THREE.AmbientLight(0xffffff, 0.72);
-          scene.add(ambient);
+          const hemiLight = new THREE.HemisphereLight(0xdbeafe, 0x1e293b, 0.85);
+          scene.add(hemiLight);
 
-          const sun = new THREE.DirectionalLight(0xfffaed, 0.95);
-          sun.position.set(65, 45, 110);
+          const sun = new THREE.DirectionalLight(0xfffaed, 1.25);
+          sun.position.set(75, 55, 120);
           sun.castShadow = true;
+          sun.shadow.mapSize.width = 2048;
+          sun.shadow.mapSize.height = 2048;
           scene.add(sun);
 
-          // Ground Reference Grid at Z=0m
-          const grid = new THREE.GridHelper(110, 22, 0x38bdf8, 0x1e293b);
+          // Fill light for architectural facades
+          const fillLight = new THREE.DirectionalLight(0x38bdf8, 0.35);
+          fillLight.position.set(-50, -40, 60);
+          scene.add(fillLight);
+
+          // Real-Time High-Resolution Satellite Ground Plane (100% Free, Zero Keys)
+          const groundSize = 180;
+          const groundGeo = new THREE.PlaneGeometry(groundSize, groundSize);
+          
+          const pLat = BUILDING_DATA.lat || 19.0216;
+          const pLon = BUILDING_DATA.lon || 73.0181;
+          const delta = 0.0016;
+          const satUrl = `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${{pLon-delta}},${{pLat-delta}},${{pLon+delta}},${{pLat+delta}}&bboxSR=4326&imageSR=4326&size=1024,1024&f=image`;
+
+          const texLoader = new THREE.TextureLoader();
+          texLoader.crossOrigin = "anonymous";
+          const groundMat = new THREE.MeshStandardMaterial({{
+            color: 0xffffff,
+            roughness: 0.95,
+            metalness: 0.05,
+            side: THREE.DoubleSide
+          }});
+
+          texLoader.load(
+            satUrl,
+            (tex) => {{
+              groundMat.map = tex;
+              groundMat.needsUpdate = true;
+            }},
+            undefined,
+            (err) => {{
+              console.warn("Satellite tile load notice:", err);
+            }}
+          );
+
+          const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+          groundMesh.position.set(20, 20, -0.05);
+          groundMesh.receiveShadow = true;
+          groups.SUR.add(groundMesh);
+
+          // Cadastral Legal Boundary Outline on Ground
+          const boundGeo = new THREE.RingGeometry(21.0, 21.8, 4);
+          boundGeo.rotateZ(Math.PI / 4);
+          const boundMat = new THREE.MeshBasicMaterial({{ color: 0x38bdf8, side: THREE.DoubleSide, transparent: true, opacity: 0.85 }});
+          const boundMesh = new THREE.Mesh(boundGeo, boundMat);
+          boundMesh.position.set(20, 20, 0.02);
+          groups.SUR.add(boundMesh);
+
+          // Subtle coordinate grid at Z=0.01m
+          const grid = new THREE.GridHelper(groundSize, 18, 0x38bdf8, 0x334155);
           grid.rotation.x = Math.PI / 2;
-          grid.position.set(20, 20, 0);
+          grid.position.set(20, 20, 0.01);
+          grid.material.opacity = 0.20;
+          grid.material.transparent = true;
           scene.add(grid);
+
+          // Surrounding Urban Context Blocks
+          addSurroundingUrbanContext();
 
           // Axes
           const axes = new THREE.AxesHelper(15);
@@ -2564,6 +2619,76 @@ def render_3d_digital_twin_component(
           }});
         }}
 
+        // Surrounding Urban Context Masses (Low-poly contextual blocks on perimeter)
+        function addSurroundingUrbanContext() {{
+          const ctxMat = new THREE.MeshStandardMaterial({{ color: 0x334155, roughness: 0.7, metalness: 0.3 }});
+          const ctxBlocks = [
+            {{ x: -32, y: 20, w: 22, d: 28, h: 25 }},
+            {{ x: 72, y: 20, w: 24, d: 26, h: 32 }},
+            {{ x: 20, y: -34, w: 32, d: 18, h: 18 }},
+            {{ x: 20, y: 74, w: 30, d: 20, h: 22 }},
+            {{ x: -28, y: -28, w: 18, d: 18, h: 15 }},
+            {{ x: 68, y: 68, w: 20, d: 20, h: 28 }}
+          ];
+
+          ctxBlocks.forEach(b => {{
+            const geo = new THREE.BoxGeometry(b.w, b.d, b.h);
+            const m = new THREE.Mesh(geo, ctxMat);
+            m.position.set(b.x, b.y, b.h / 2);
+            m.receiveShadow = true;
+            m.castShadow = true;
+            
+            const wire = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({{ color: 0x64748b, transparent: true, opacity: 0.35 }}));
+            m.add(wire);
+            
+            groups.SUR.add(m);
+          }});
+        }}
+
+        // Procedural Architectural Curtain Wall & Spandrel Texture Generator
+        const materialCache = new Map();
+        function getArchitecturalTexture(colorHex) {{
+          const hex = typeof colorHex === 'number' ? '#' + colorHex.toString(16).padStart(6, '0') : colorHex;
+          if (materialCache.has(hex)) return materialCache.get(hex);
+
+          const canvas = document.createElement('canvas');
+          canvas.width = 128;
+          canvas.height = 128;
+          const ctx = canvas.getContext('2d');
+
+          const grad = ctx.createLinearGradient(0, 0, 0, 128);
+          grad.addColorStop(0, hex);
+          grad.addColorStop(0.5, '#0284c7');
+          grad.addColorStop(1, '#0f172a');
+          ctx.fillStyle = grad;
+          ctx.fillRect(0, 0, 128, 128);
+
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+          ctx.fillRect(0, 114, 128, 14);
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+          ctx.fillRect(0, 112, 128, 2);
+
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+          ctx.lineWidth = 2;
+          for (let x = 16; x < 128; x += 32) {{
+            ctx.beginPath();
+            ctx.moveTo(x, 0);
+            ctx.lineTo(x, 112);
+            ctx.stroke();
+          }}
+
+          ctx.fillStyle = 'rgba(254, 240, 138, 0.08)';
+          ctx.fillRect(18, 16, 26, 80);
+          ctx.fillRect(82, 20, 26, 75);
+
+          const tex = new THREE.CanvasTexture(canvas);
+          tex.wrapS = THREE.RepeatWrapping;
+          tex.wrapT = THREE.RepeatWrapping;
+          tex.repeat.set(2, 1);
+          materialCache.set(hex, tex);
+          return tex;
+        }}
+
         // -------------------------------------------------------------
         // THREE.JS GEOMETRY HELPERS
         // -------------------------------------------------------------
@@ -2574,14 +2699,38 @@ def render_3d_digital_twin_component(
           shape.closePath();
 
           const geo = new THREE.ExtrudeGeometry(shape, {{ steps: 1, depth: zMax - zMin, bevelEnabled: false }});
-          const mat = new THREE.MeshStandardMaterial({{
-            color: color,
-            roughness: 0.35,
-            metalness: 0.15,
-            transparent: true,
-            opacity: opacity,
-            side: THREE.DoubleSide
-          }});
+          
+          let mat;
+          if (stratum === "BLD" || stratum === "COM") {{
+            const archTex = getArchitecturalTexture(color);
+            mat = new THREE.MeshStandardMaterial({{
+              color: color,
+              map: archTex,
+              roughness: 0.22,
+              metalness: 0.65,
+              transparent: true,
+              opacity: Math.max(0.78, opacity),
+              side: THREE.DoubleSide
+            }});
+          }} else if (stratum === "SUB" || stratum === "UTL") {{
+            mat = new THREE.MeshStandardMaterial({{
+              color: color,
+              roughness: 0.8,
+              metalness: 0.2,
+              transparent: true,
+              opacity: opacity,
+              side: THREE.DoubleSide
+            }});
+          }} else {{
+            mat = new THREE.MeshStandardMaterial({{
+              color: color,
+              roughness: 0.35,
+              metalness: 0.15,
+              transparent: true,
+              opacity: opacity,
+              side: THREE.DoubleSide
+            }});
+          }}
 
           const mesh = new THREE.Mesh(geo, mat);
           mesh.position.set(0, 0, zMin);
@@ -2600,14 +2749,31 @@ def render_3d_digital_twin_component(
           const height = zMax - zMin;
           const geo = new THREE.CylinderGeometry(radiusTop, radiusBottom, height, radialSegments);
           geo.rotateX(Math.PI / 2);
-          const mat = new THREE.MeshStandardMaterial({{
-            color: color,
-            roughness: 0.3,
-            metalness: 0.2,
-            transparent: true,
-            opacity: opacity,
-            side: THREE.DoubleSide
-          }});
+
+          let mat;
+          if (stratum === "BLD" || stratum === "COM") {{
+            const archTex = getArchitecturalTexture(color);
+            archTex.repeat.set(4, 1);
+            mat = new THREE.MeshStandardMaterial({{
+              color: color,
+              map: archTex,
+              roughness: 0.2,
+              metalness: 0.7,
+              transparent: true,
+              opacity: Math.max(0.78, opacity),
+              side: THREE.DoubleSide
+            }});
+          }} else {{
+            mat = new THREE.MeshStandardMaterial({{
+              color: color,
+              roughness: 0.6,
+              metalness: 0.2,
+              transparent: true,
+              opacity: opacity,
+              side: THREE.DoubleSide
+            }});
+          }}
+
           const mesh = new THREE.Mesh(geo, mat);
           const midZ = zMin + height / 2;
           mesh.position.set(20, 20, midZ);
