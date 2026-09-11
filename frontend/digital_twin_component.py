@@ -588,15 +588,10 @@ def render_3d_digital_twin_component(
           <div id="ctrl-topo-group" class="flex-col gap-2 text-xs" style="display: none;">
             <div class="flex justify-between items-center border-b border-white/10 pb-1">
               <span class="font-bold text-slate-200">3D Topology Audit</span>
-              <button onclick="toggleClashHighlight()" class="bg-red-600 hover:bg-red-500 text-white text-[10px] px-2 py-0.5 rounded font-bold">Highlight Clashes</button>
+              <button onclick="toggleClashHighlight()" id="btn-highlight-clash" class="bg-red-600 hover:bg-red-500 text-white text-[10px] px-2 py-0.5 rounded font-bold">Highlight Clashes</button>
             </div>
-            <div class="bg-red-950/40 border border-red-500/30 p-2 rounded text-[11px] text-red-200">
-              <b>⚠️ 1 Volumetric Clash Detected</b><br/>
-              Unit 402 encroaches into public airspace by 48.0 m³.
-            </div>
-            <div class="bg-amber-950/40 border border-amber-500/30 p-2 rounded text-[11px] text-amber-200">
-              <b>⚠️ 1 Setback Violation</b><br/>
-              Overhanging balcony exceeds boundary by 18.5%.
+            <div id="topo-audit-content" class="flex flex-col gap-2 mt-1">
+              <!-- Dynamically populated via renderTopologyAudit() -->
             </div>
           </div>
 
@@ -616,7 +611,7 @@ def render_3d_digital_twin_component(
           <div class="border-b border-white/10 pb-1.5 flex justify-between items-start">
             <div class="truncate max-w-[180px]">
               <span class="text-[8px] text-sky-400 font-bold uppercase tracking-wider">ISO 19152 Spatial Unit</span>
-              <h2 class="text-xs font-bold text-white truncate mt-0.5" id="card-title">Residential Flat 402</h2>
+              <h2 class="text-xs font-bold text-white truncate mt-0.5" id="card-title">{property_name}</h2>
             </div>
             <div class="flex items-center gap-1">
               <span class="text-[8px] font-bold text-emerald-400 bg-emerald-950/60 px-1.5 py-0.5 rounded" id="card-status">VERIFIED</span>
@@ -628,31 +623,31 @@ def render_3d_digital_twin_component(
 
           <div class="ulpin-box">
             <span class="text-[9px] text-slate-400 uppercase font-semibold">3D ULPIN (Bhu-Aadhaar 3D)</span>
-            <div class="ulpin-code" id="card-ulpin">{base_ulpin}-BLD-F04-A402-K</div>
+            <div class="ulpin-code" id="card-ulpin">{base_ulpin}-SUR-G00-PL01-8</div>
           </div>
 
           <div class="metrics-grid">
             <div class="metric-tile">
               <div class="lbl">Stratum & Level</div>
-              <div class="val text-sky-400" id="card-lvl">BLD (Floor 4)</div>
+              <div class="val text-sky-400" id="card-lvl">SUR (Master Parcel)</div>
             </div>
             <div class="metric-tile">
               <div class="lbl">Elevation Band (Z)</div>
-              <div class="val" id="card-z">12.8m - 16.0m</div>
+              <div class="val" id="card-z">{elev_str}</div>
             </div>
             <div class="metric-tile">
               <div class="lbl">Floor Area</div>
-              <div class="val" id="card-area">100.0 m²</div>
+              <div class="val" id="card-area">1,600 m²</div>
             </div>
             <div class="metric-tile">
               <div class="lbl">Enclosed Volume</div>
-              <div class="val" id="card-vol">320.0 m³</div>
+              <div class="val" id="card-vol">{int(1600 * abs(total_height)):,} m³</div>
             </div>
           </div>
 
           <div class="text-xs flex flex-col gap-1 text-slate-300 bg-slate-900/50 p-2.5 rounded-lg border border-white/5">
             <div><span class="text-slate-400">Owner:</span> <b class="text-white" id="card-owner">{owner}</b></div>
-            <div><span class="text-slate-400">Valuation:</span> <b class="text-emerald-400" id="card-val">₹ 1.25 Cr</b></div>
+            <div><span class="text-slate-400">Valuation:</span> <b class="text-emerald-400" id="card-val">₹ {valuation_cr:.1f} Cr</b></div>
             <div><span class="text-slate-400">Right Type:</span> <span>Strata Freehold Title</span></div>
           </div>
 
@@ -695,7 +690,7 @@ def render_3d_digital_twin_component(
       <script>
         const BUILDING_DATA = {building_meta_json};
         const container = document.getElementById('webgl-container');
-        let scene, camera, renderer, controls;
+        let scene, camera, renderer, controls, groundMat;
         const meshMap = new Map();
         let selectedMesh = null;
         let isClashActive = false;
@@ -736,8 +731,8 @@ def render_3d_digital_twin_component(
           const isSub = BUILDING_DATA.base_elevation < 0;
           const bH = Math.abs(BUILDING_DATA.total_height) || 40;
           if (isSub) {{
-            camera.position.set(48, -40, -10);
-            controls.target.set(20, 20, -8);
+            camera.position.set(56, -14, 12);
+            controls.target.set(20, 20, -9);
           }} else if (bH >= 180) {{
             camera.position.set(70, -65, 75);
             controls.target.set(20, 20, 28);
@@ -773,11 +768,13 @@ def render_3d_digital_twin_component(
 
           const texLoader = new THREE.TextureLoader();
           texLoader.crossOrigin = "anonymous";
-          const groundMat = new THREE.MeshStandardMaterial({{
+          groundMat = new THREE.MeshStandardMaterial({{
             color: 0xffffff,
             roughness: 0.95,
             metalness: 0.05,
-            side: THREE.DoubleSide
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: isSub ? 0.35 : 1.0
           }});
 
           texLoader.load(
@@ -851,8 +848,9 @@ def render_3d_digital_twin_component(
             applyXRay(f);
           }});
 
-          // Init chart
+          // Init chart & topology audit
           initChart();
+          renderTopologyAudit();
           lucide.createIcons();
           animate();
         }}
@@ -2152,37 +2150,333 @@ def render_3d_digital_twin_component(
 
         // ARCHETYPE 10: GIFT Subsurface Utility Tunnel (TUM) - Multi-Utility Conduit System
         function buildUtilityTunnelTrench(data) {{
-          // Walk-Through Utility Trench (-16 to 0m)
-          createPrism("SUB_TRENCH", [[10,2],[30,2],[30,38],[10,38]], -16, 0, 0x334155, 0.8, "SUB", -1, {{
-            name: "GIFT City Walk-Through Utility Tunnel (TUM Trench)",
+          // 1. Excavated Subsurface Trench Volume (Cadastral Unit SUB_TRENCH)
+          // Monolithic U-Channel envelope (-16.0m to 0.0m)
+          createPrism("SUB_TRENCH", [[9, 1], [31, 1], [31, 39], [9, 39]], -16.0, 0.0, 0x1e293b, 0.20, "SUB", -1, {{
+            name: "GIFT City Subsurface Multi-Utility Tunnel (TUM Structural Trench)",
             ulpin: `${{data.base_ulpin}}-SUB-B01-TM01-G`,
-            z: "-16.0m to 0.0m",
-            area: "720 m²",
-            vol: "11520 m³",
+            z: "-16.0m to 0.0m MSL",
+            area: "836 m²",
+            vol: "13,376 m³",
             owner: "GIFT Urban Infrastructure Ltd",
             val: "₹ 890 Cr"
           }});
 
-          // 4 Conduits: District Cooling (Cyan), Vacuum Waste (Purple), Power (Amber), Water (Emerald)
-          const conduits = [
-            {{ id: "COOLING", clr: 0x06b6d4, z: -4, name: "District Cooling Chilled Water 900mm Pipes" }},
-            {{ id: "WASTE", clr: 0xa855f7, z: -8, name: "Automated Vacuum Waste Collection (AVWC) Tubes" }},
-            {{ id: "POWER", clr: 0xf59e0b, z: -11, name: "66kV Extra High Voltage Underground Power Trays" }},
-            {{ id: "WATER", clr: 0x10b981, z: -14, name: "Dual Potable & Recycled Irrigation Water Conduits" }}
-          ];
+          // 2. Heavy Reinforced Concrete Structural Slab & Retaining Walls
+          const concMat = new THREE.MeshStandardMaterial({{ color: 0x334155, roughness: 0.85, metalness: 0.15 }});
+          const kerbMat = new THREE.MeshStandardMaterial({{ color: 0xeab308, roughness: 0.6 }});
 
-          conduits.forEach(c => {{
-            const pGeo = new THREE.CylinderGeometry(0.8, 0.8, 38, 16);
-            const pMat = new THREE.MeshStandardMaterial({{ color: c.clr, roughness: 0.3, transparent: true, opacity: 0.95 }});
-            const pMesh = new THREE.Mesh(pGeo, pMat);
-            pMesh.position.set(16, 20, c.z);
-            groups.UTL.add(pMesh);
+          // Bottom Invert Slab (Z = -16.5m to -15.5m)
+          const baseGeo = new THREE.BoxGeometry(22, 40, 1.0);
+          const baseMesh = new THREE.Mesh(baseGeo, concMat);
+          baseMesh.position.set(20, 20, -16.0);
+          baseMesh.receiveShadow = true;
+          groups.SUB.add(baseMesh);
 
-            const pMesh2 = pMesh.clone();
-            pMesh2.position.set(24, 20, c.z);
-            groups.UTL.add(pMesh2);
+          // West Retaining Concrete Wall (X: 9.0 to 10.8)
+          const wallWestGeo = new THREE.BoxGeometry(1.8, 40, 16.0);
+          const wallWest = new THREE.Mesh(wallWestGeo, concMat);
+          wallWest.position.set(9.9, 20, -8.0);
+          groups.SUB.add(wallWest);
 
-            meshMap.set(`UTL_${{c.id}}`, pMesh);
+          // East Retaining Concrete Wall (X: 29.2 to 31.0)
+          const wallEastGeo = new THREE.BoxGeometry(1.8, 40, 16.0);
+          const wallEast = new THREE.Mesh(wallEastGeo, concMat);
+          wallEast.position.set(30.1, 20, -8.0);
+          groups.SUB.add(wallEast);
+
+          // Ground Surface Yellow Safety Kerbs along Trench Edges (Z = 0.0m to 0.4m)
+          [-1, 1].forEach(side => {{
+            const kerbGeo = new THREE.BoxGeometry(0.8, 40, 0.4);
+            const kerbMesh = new THREE.Mesh(kerbGeo, kerbMat);
+            kerbMesh.position.set(20 + (side * 10.5), 20, 0.2);
+            groups.SUB.add(kerbMesh);
+          }});
+
+          // 3. Structural Concrete Portal Frames & Cantilever Bracket Racks (Every 6m along Y)
+          const frameMat = new THREE.MeshStandardMaterial({{ color: 0x475569, roughness: 0.7, metalness: 0.3 }});
+          const armMat = new THREE.MeshStandardMaterial({{ color: 0x64748b, metalness: 0.85, roughness: 0.25 }});
+          const frameYPositions = [3, 9, 15, 21, 27, 33, 39];
+
+          frameYPositions.forEach(fy => {{
+            // Portal Arch Cross-Tie Beam (Ceiling Strut at Z = -1.0m)
+            const beamGeo = new THREE.BoxGeometry(19.5, 0.8, 1.2);
+            const beamMesh = new THREE.Mesh(beamGeo, frameMat);
+            beamMesh.position.set(20, fy, -1.0);
+            groups.SUB.add(beamMesh);
+
+            // Mid Strut supporting walkway (Z = -12.0m)
+            const midBeamGeo = new THREE.BoxGeometry(19.5, 0.6, 0.8);
+            const midBeam = new THREE.Mesh(midBeamGeo, frameMat);
+            midBeam.position.set(20, fy, -12.0);
+            groups.SUB.add(midBeam);
+
+            // Columns (West & East)
+            [-1, 1].forEach(side => {{
+              const colGeo = new THREE.BoxGeometry(0.9, 0.8, 15.0);
+              const colMesh = new THREE.Mesh(colGeo, frameMat);
+              colMesh.position.set(20 + (side * 9.2), fy, -8.5);
+              groups.SUB.add(colMesh);
+
+              // 4 Tier Cantilever Steel Bracket Arms extending from column into trench
+              [-3.2, -6.8, -10.5, -14.2].forEach(az => {{
+                const armGeo = new THREE.BoxGeometry(2.4, 0.25, 0.2);
+                const arm = new THREE.Mesh(armGeo, armMat);
+                arm.position.set(20 + (side * 7.8), fy, az - 0.5);
+                groups.SUB.add(arm);
+              }});
+            }});
+
+            // Overhead LED Luminaire Fixture (Cool White / Blue Utility Light)
+            const lampGeo = new THREE.BoxGeometry(1.6, 0.4, 0.15);
+            const lampMat = new THREE.MeshStandardMaterial({{ color: 0xe0f2fe, emissive: 0x38bdf8, emissiveIntensity: 0.8 }});
+            const lamp = new THREE.Mesh(lampGeo, lampMat);
+            lamp.position.set(20, fy, -1.7);
+            groups.SUB.add(lamp);
+          }});
+
+          // 4. Central Maintenance Grating Walkway & Safety Handrails (-11.5m to -10.3m)
+          const walkMat = new THREE.MeshStandardMaterial({{ color: 0x64748b, metalness: 0.85, roughness: 0.25 }});
+          const walkGeo = new THREE.BoxGeometry(3.6, 40, 0.25);
+          const walkMesh = new THREE.Mesh(walkGeo, walkMat);
+          walkMesh.position.set(20, 20, -11.35);
+          walkMesh.userData = {{
+            id: "UTL_WALKWAY",
+            stratum: "COM",
+            originalZ: -11.35,
+            floorIdx: -3,
+            baseOpacity: 0.95,
+            baseColor: 0x64748b,
+            info: {{
+              name: "Central Maintenance Walkway & Automated Robotic Inspection Patrol Corridor",
+              ulpin: `${{data.base_ulpin}}-COM-B03-WLK1-K`,
+              z: "-11.5m to -10.3m MSL",
+              area: "144 m²",
+              vol: "172 m³",
+              owner: "GIFT Urban Infrastructure Maintenance Directorate",
+              val: "₹ 45.0 Cr"
+            }}
+          }};
+          groups.COM.add(walkMesh);
+          meshMap.set("UTL_WALKWAY", walkMesh);
+
+          // Yellow Safety Handrails along both sides of Walkway (at X = 18.2 and X = 21.8)
+          const railMat = new THREE.MeshStandardMaterial({{ color: 0xfacc15, metalness: 0.5, roughness: 0.3 }});
+          [-1, 1].forEach(side => {{
+            const rx = 20 + (side * 1.8);
+            const topRGeo = new THREE.BoxGeometry(0.08, 40, 0.08);
+            const topR = new THREE.Mesh(topRGeo, railMat);
+            topR.position.set(rx, 20, -10.35);
+            groups.COM.add(topR);
+
+            const midRGeo = new THREE.BoxGeometry(0.06, 40, 0.06);
+            const midR = new THREE.Mesh(midRGeo, railMat);
+            midR.position.set(rx, 20, -10.85);
+            groups.COM.add(midR);
+
+            for (let sy = 1; sy <= 39; sy += 2.5) {{
+              const stanchGeo = new THREE.BoxGeometry(0.06, 0.06, 1.0);
+              const stanch = new THREE.Mesh(stanchGeo, railMat);
+              stanch.position.set(rx, sy, -10.85);
+              groups.COM.add(stanch);
+            }}
+          }});
+
+          // Maintenance Access Vertical Ladders (at Y = 3.5 and Y = 36.5, Z = -11.2m to 0.0m)
+          [3.5, 36.5].forEach(ly => {{
+            const ladMat = new THREE.MeshStandardMaterial({{ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 }});
+            [-0.3, 0.3].forEach(lx => {{
+              const rail = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 11.4), ladMat);
+              rail.position.set(20 + lx, ly, -5.6);
+              groups.SUB.add(rail);
+            }});
+            for (let rz = -11.0; rz <= -0.4; rz += 0.4) {{
+              const rung = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.04, 0.04), ladMat);
+              rung.position.set(20, ly, rz);
+              groups.SUB.add(rung);
+            }}
+          }});
+
+          // 5. THE 4 DEDICATED CONDUIT PIPELINES & CABLE TRAYS (Running Horizontally along Y)
+          
+          // CONDUIT 1: District Cooling System (DCS) - Dual 900mm Chilled Water Pipes (Z = -3.2m)
+          const dcsMat = new THREE.MeshStandardMaterial({{ color: 0x06b6d4, roughness: 0.22, metalness: 0.55 }});
+          const dcsInfo = {{
+            name: "District Cooling System (DCS) - Twin 900mm Chilled Water Supply & Return Network",
+            ulpin: `${{data.base_ulpin}}-UTL-B01-DCS1-G`,
+            z: "-4.0m to -2.5m MSL",
+            area: "176 m²",
+            vol: "704 m³",
+            owner: "GIFT District Cooling Utility SPV (GIFT Urban Infrastructure Ltd)",
+            val: "₹ 240 Cr"
+          }};
+
+          [-1, 1].forEach(side => {{
+            const px = 20 + (side * 6.5);
+            const pipeGeo = new THREE.CylinderGeometry(0.55, 0.55, 40, 24);
+            const pipeMesh = new THREE.Mesh(pipeGeo, dcsMat);
+            pipeMesh.position.set(px, 20, -3.2);
+            pipeMesh.castShadow = true;
+            pipeMesh.userData = {{
+              id: side > 0 ? "UTL_DCS_SUPPLY" : "UTL_DCS_RETURN",
+              stratum: "UTL",
+              originalZ: -3.2,
+              floorIdx: -1,
+              baseOpacity: 0.95,
+              baseColor: 0x06b6d4,
+              info: dcsInfo
+            }};
+            groups.UTL.add(pipeMesh);
+            meshMap.set(side > 0 ? "UTL_DCS_SUPPLY" : "UTL_DCS_RETURN", pipeMesh);
+
+            frameYPositions.forEach(fy => {{
+              const flangeGeo = new THREE.CylinderGeometry(0.70, 0.70, 0.35, 18);
+              const flange = new THREE.Mesh(flangeGeo, new THREE.MeshStandardMaterial({{ color: 0x0891b2, metalness: 0.7 }}));
+              flange.position.set(px, fy, -3.2);
+              groups.UTL.add(flange);
+            }});
+          }});
+
+          // CONDUIT 2: Automated Vacuum Waste Collection (AVWC) - Twin Pneumatic Tubes (Z = -6.8m)
+          const avwcMat = new THREE.MeshStandardMaterial({{ color: 0xa855f7, roughness: 0.25, metalness: 0.45 }});
+          const avwcInfo = {{
+            name: "Automated Vacuum Waste Collection (AVWC) - Dual Pneumatic High-Speed Transport Tubes",
+            ulpin: `${{data.base_ulpin}}-UTL-B02-AVW1-7`,
+            z: "-7.5m to -6.0m MSL",
+            area: "140 m²",
+            vol: "560 m³",
+            owner: "Envac Automated Waste Management (GIFT SPV)",
+            val: "₹ 160 Cr"
+          }};
+
+          [-1, 1].forEach(side => {{
+            const px = 20 + (side * 6.2);
+            const tubeGeo = new THREE.CylinderGeometry(0.42, 0.42, 40, 20);
+            const tubeMesh = new THREE.Mesh(tubeGeo, avwcMat);
+            tubeMesh.position.set(px, 20, -6.8);
+            tubeMesh.userData = {{
+              id: side > 0 ? "UTL_AVWC_EAST" : "UTL_AVWC_WEST",
+              stratum: "UTL",
+              originalZ: -6.8,
+              floorIdx: -2,
+              baseOpacity: 0.95,
+              baseColor: 0xa855f7,
+              info: avwcInfo
+            }};
+            groups.UTL.add(tubeMesh);
+            meshMap.set(side > 0 ? "UTL_AVWC_EAST" : "UTL_AVWC_WEST", tubeMesh);
+
+            frameYPositions.forEach(fy => {{
+              const flange = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.3, 16), new THREE.MeshStandardMaterial({{ color: 0x9333ea, metalness: 0.6 }}));
+              flange.position.set(px, fy, -6.8);
+              groups.UTL.add(flange);
+            }});
+
+            [10, 24].forEach(cy => {{
+              const chuteGeo = new THREE.CylinderGeometry(0.28, 0.28, 6.8, 16);
+              chuteGeo.rotateX(Math.PI / 2);
+              const chute = new THREE.Mesh(chuteGeo, avwcMat);
+              chute.position.set(px, cy, -3.4);
+              groups.UTL.add(chute);
+            }});
+          }});
+
+          // CONDUIT 3: 66kV Extra High Voltage Underground Power Distribution Trays (Z = -10.5m)
+          const powerInfo = {{
+            name: "66kV Extra High Voltage Gas-Insulated Power Transmission Ladder Trays & Telecom Conduits",
+            ulpin: `${{data.base_ulpin}}-UTL-B03-HV66-P`,
+            z: "-11.2m to -9.8m MSL",
+            area: "160 m²",
+            vol: "640 m³",
+            owner: "Gujarat Energy Transmission Corp (GETCO) & GIFT Power Company",
+            val: "₹ 290 Cr"
+          }};
+
+          const trayMat = new THREE.MeshStandardMaterial({{ color: 0x94a3b8, metalness: 0.9, roughness: 0.2 }});
+          const cableAmberMat = new THREE.MeshStandardMaterial({{ color: 0xf59e0b, roughness: 0.35 }});
+          const cableOrangeMat = new THREE.MeshStandardMaterial({{ color: 0xd97706, roughness: 0.35 }});
+
+          [-1, 1].forEach(side => {{
+            const tx = 20 + (side * 6.0);
+            const trayGeo = new THREE.BoxGeometry(1.8, 40, 0.15);
+            const trayMesh = new THREE.Mesh(trayGeo, trayMat);
+            trayMesh.position.set(tx, 20, -10.5);
+            trayMesh.userData = {{
+              id: side > 0 ? "UTL_POWER_EAST" : "UTL_POWER_WEST",
+              stratum: "UTL",
+              originalZ: -10.5,
+              floorIdx: -3,
+              baseOpacity: 0.95,
+              baseColor: 0xf59e0b,
+              info: powerInfo
+            }};
+            groups.UTL.add(trayMesh);
+            meshMap.set(side > 0 ? "UTL_POWER_EAST" : "UTL_POWER_WEST", trayMesh);
+
+            [-0.5, 0.0, 0.5].forEach((cx, ci) => {{
+              const cGeo = new THREE.CylinderGeometry(0.12, 0.12, 40, 12);
+              const cMesh = new THREE.Mesh(cGeo, ci === 1 ? cableOrangeMat : cableAmberMat);
+              cMesh.position.set(tx + cx, 20, -10.35);
+              groups.UTL.add(cMesh);
+            }});
+          }});
+
+          // CONDUIT 4: Potable Water Supply & Tertiary Recycled Greywater Distribution (Z = -14.2m)
+          const waterMat = new THREE.MeshStandardMaterial({{ color: 0x10b981, roughness: 0.2, metalness: 0.4 }});
+          const waterInfo = {{
+            name: "Dual Potable Water & Tertiary Recycled Greywater Municipal Distribution Mains",
+            ulpin: `${{data.base_ulpin}}-UTL-B04-WTR1-M`,
+            z: "-15.0m to -13.5m MSL",
+            area: "176 m²",
+            vol: "704 m³",
+            owner: "GIFT Water Regulatory Commission & Narmada Water Supply Grid",
+            val: "₹ 120 Cr"
+          }};
+
+          [-1, 1].forEach(side => {{
+            const wx = 20 + (side * 6.4);
+            const wGeo = new THREE.CylinderGeometry(0.50, 0.50, 40, 24);
+            const wMesh = new THREE.Mesh(wGeo, waterMat);
+            wMesh.position.set(wx, 20, -14.2);
+            wMesh.userData = {{
+              id: side > 0 ? "UTL_WATER_EAST" : "UTL_WATER_WEST",
+              stratum: "UTL",
+              originalZ: -14.2,
+              floorIdx: -4,
+              baseOpacity: 0.95,
+              baseColor: 0x10b981,
+              info: waterInfo
+            }};
+            groups.UTL.add(wMesh);
+            meshMap.set(side > 0 ? "UTL_WATER_EAST" : "UTL_WATER_WEST", wMesh);
+
+            frameYPositions.forEach((fy, idx) => {{
+              const flange = new THREE.Mesh(new THREE.CylinderGeometry(0.65, 0.65, 0.35, 18), new THREE.MeshStandardMaterial({{ color: 0x059669, metalness: 0.6 }}));
+              flange.position.set(wx, fy, -14.2);
+              groups.UTL.add(flange);
+
+              if (idx === 2 || idx === 4) {{
+                const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.6, 8), new THREE.MeshStandardMaterial({{ color: 0x334155 }}));
+                stem.position.set(wx, fy, -13.6);
+                groups.UTL.add(stem);
+
+                const wheelGeo = new THREE.TorusGeometry(0.3, 0.05, 8, 16);
+                const wheel = new THREE.Mesh(wheelGeo, new THREE.MeshStandardMaterial({{ color: 0xef4444 }}));
+                wheel.position.set(wx, fy, -13.3);
+                wheel.rotation.x = Math.PI / 2;
+                groups.UTL.add(wheel);
+              }}
+            }});
+          }});
+
+          // 6. Surface Street Level Features (Z = 0.0m)
+          const hatchMat = new THREE.MeshStandardMaterial({{ color: 0x475569, metalness: 0.85, roughness: 0.3 }});
+          [3.5, 20.0, 36.5].forEach(hy => {{
+            const hatchGeo = new THREE.CylinderGeometry(1.0, 1.0, 0.1, 16);
+            hatchGeo.rotateX(Math.PI / 2);
+            const hatch = new THREE.Mesh(hatchGeo, hatchMat);
+            hatch.position.set(20, hy, 0.05);
+            groups.SUR.add(hatch);
           }});
         }}
 
@@ -2797,6 +3091,7 @@ def render_3d_digital_twin_component(
         }}
 
         function applyXRay(val) {{
+          if (typeof groundMat !== 'undefined' && groundMat) groundMat.opacity = Math.max(0.08, val);
           meshMap.forEach(m => {{
             const s = m.userData.stratum;
             if (s === "SUR" || s === "BLD" || s === "COM") m.material.opacity = Math.max(0.06, m.userData.baseOpacity * val);
@@ -2815,7 +3110,7 @@ def render_3d_digital_twin_component(
           const midZ = isSub ? -8 : (bH > 150 ? 25 : 14);
 
           if (mode === 'iso') {{
-            if (isSub) camera.position.set(48, -40, -10);
+            if (isSub) camera.position.set(56, -14, 12);
             else if (bH > 150) camera.position.set(70, -65, 75);
             else camera.position.set(52, -48, 50);
             controls.target.set(20, 20, midZ);
@@ -2823,8 +3118,8 @@ def render_3d_digital_twin_component(
             camera.position.set(20, 20, bH > 150 ? 130 : 92);
             controls.target.set(20, 20, 0);
           }} else if (mode === 'sub') {{
-            camera.position.set(38, -28, -18);
-            controls.target.set(20, 20, -8);
+            camera.position.set(42, 4, -8);
+            controls.target.set(20, 20, -10);
             applyXRay(0.18);
             document.getElementById('rng-xray').value = 0.18;
             document.getElementById('lbl-xray').textContent = '18%';
@@ -2947,16 +3242,106 @@ def render_3d_digital_twin_component(
           document.getElementById('gen-chk').textContent = chk;
         }}
 
+        function renderTopologyAudit() {{
+          const container = document.getElementById('topo-audit-content');
+          const btn = document.getElementById('btn-highlight-clash');
+          if (!container) return;
+
+          const arc = BUILDING_DATA.archetype;
+          if (arc === 'utility_tunnel_trench') {{
+            if (btn) {{
+              btn.className = "bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] px-2 py-0.5 rounded font-bold";
+              btn.textContent = "Audit Conduits";
+            }}
+            container.innerHTML = `
+              <div class="bg-emerald-950/40 border border-emerald-500/30 p-2 rounded text-[11px] text-emerald-200">
+                <b>✓ CEA Section 68 Safety Clearance</b><br/>
+                3.5m vertical clearance between 66kV power trays & water mains. Zero electro-mechanical clash.
+              </div>
+              <div class="bg-sky-950/40 border border-sky-500/30 p-2 rounded text-[11px] text-sky-200">
+                <b>✓ Subsurface Right-of-Way (ROW)</b><br/>
+                Corridor stays within designated 20m utility reserve width. 4.8m safety buffer to adjacent pile foundations.
+              </div>
+              <div class="bg-indigo-950/40 border border-indigo-500/30 p-2 rounded text-[11px] text-indigo-200">
+                <b>✓ ISO 19152 3D Cadastral Integrity</b><br/>
+                4 utility concessionaires (Cooling, AVWC, Power, Water) verified with distinct volumetric strata titles.
+              </div>
+            `;
+          }} else if (arc === 'underwater_subaqueous_tunnel') {{
+            if (btn) {{
+              btn.className = "bg-cyan-600 hover:bg-cyan-500 text-white text-[10px] px-2 py-0.5 rounded font-bold";
+              btn.textContent = "Audit Subaqueous Bore";
+            }}
+            container.innerHTML = `
+              <div class="bg-cyan-950/40 border border-cyan-500/30 p-2 rounded text-[11px] text-cyan-200">
+                <b>✓ Subaqueous Overburden Clearance</b><br/>
+                14.0m alluvial sediment buffer between riverbed bottom and crown of circular bored shield tunnel.
+              </div>
+              <div class="bg-emerald-950/40 border border-emerald-500/30 p-2 rounded text-[11px] text-emerald-200">
+                <b>✓ Navigational Fairway Separation</b><br/>
+                Zero encroachment into Inland Waterways Authority (IWAI) navigable channel draft (-2m to 0m MSL).
+              </div>
+            `;
+          }} else if (arc === 'subterranean_multilevel_cavern') {{
+            if (btn) {{
+              btn.className = "bg-amber-600 hover:bg-amber-500 text-white text-[10px] px-2 py-0.5 rounded font-bold";
+              btn.textContent = "Audit Rock Cavern";
+            }}
+            container.innerHTML = `
+              <div class="bg-emerald-950/40 border border-emerald-500/30 p-2 rounded text-[11px] text-emerald-200">
+                <b>✓ Basalt Rock Cavern Stability</b><br/>
+                Structural rock pillar anchors and NATM shotcrete lining within safety envelope.
+              </div>
+              <div class="bg-sky-950/40 border border-sky-500/30 p-2 rounded text-[11px] text-sky-200">
+                <b>✓ Deep Foundation Isolation</b><br/>
+                6.2m rock buffer separating metro platforms from surface tower friction piles.
+              </div>
+            `;
+          }} else {{
+            if (btn) {{
+              btn.className = "bg-red-600 hover:bg-red-500 text-white text-[10px] px-2 py-0.5 rounded font-bold";
+              btn.textContent = "Highlight Clashes";
+            }}
+            container.innerHTML = `
+              <div class="bg-emerald-950/40 border border-emerald-500/30 p-2 rounded text-[11px] text-emerald-200">
+                <b>✓ 100% Setback Compliant</b><br/>
+                Building footprint and upper floors remain strictly within 40m×40m cadastral parcel boundary.
+              </div>
+              <div class="bg-sky-950/40 border border-sky-500/30 p-2 rounded text-[11px] text-sky-200">
+                <b>✓ Airspace & OLS Cleared</b><br/>
+                Top architectural crown (${{BUILDING_DATA.total_height}}m) complies with AAI Obstacle Limitation Surface.
+              </div>
+              <div class="bg-indigo-950/40 border border-indigo-500/30 p-2 rounded text-[11px] text-indigo-200">
+                <b>✓ Watertight Strata Hierarchy</b><br/>
+                All volumetric spatial units tessellate cleanly with zero internal intersection or ownership overlap.
+              </div>
+            `;
+          }}
+        }}
+
         function toggleClashHighlight() {{
           isClashActive = !isClashActive;
+          const isTunnel = BUILDING_DATA.archetype === 'utility_tunnel_trench';
           meshMap.forEach(m => {{
-            if (m.userData.id.includes("402") || m.userData.id.includes("AIR")) {{
-              if (isClashActive) {{
-                m.material.color.setHex(0xef4444);
-                m.material.emissive.setHex(0xb91c1c);
-              }} else {{
-                m.material.color.setHex(m.userData.baseColor);
-                m.material.emissive.setHex(0x000000);
+            if (isTunnel) {{
+              if (m.userData.stratum === "UTL" || m.userData.id.includes("UTL")) {{
+                if (isClashActive) {{
+                  m.material.emissive.setHex(m.userData.baseColor || 0x38bdf8);
+                  m.material.emissiveIntensity = 0.85;
+                }} else {{
+                  m.material.emissive.setHex(0x000000);
+                  m.material.emissiveIntensity = 0.0;
+                }}
+              }}
+            }} else {{
+              if (m.userData.id.includes("AIR") || m.userData.floorIdx === 4) {{
+                if (isClashActive) {{
+                  m.material.color.setHex(0xef4444);
+                  m.material.emissive.setHex(0xb91c1c);
+                }} else {{
+                  m.material.color.setHex(m.userData.baseColor);
+                  m.material.emissive.setHex(0x000000);
+                }}
               }}
             }}
           }});
