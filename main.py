@@ -1,5 +1,6 @@
 import os
 import sys
+import json
 import sqlite3
 import pandas as pd
 import streamlit as st
@@ -312,9 +313,8 @@ with col_panel:
             "🌐 3D Digital Twin Studio", 
             value=("3D WebGL" in selected_role or st.session_state.get("force_twin_view", False) or st.session_state.get("active_twin_prop") == selected_prop_id),
             key="twin_studio_toggle_widget",
-            help="Open the interactive Three.js 3D WebGL Digital Twin with Exploded Floor View and Subsurface X-Ray for this parcel."
+            help="Open the interactive Three.js 3D WebGL Digital Twin on live high-resolution satellite ground with floor slicing and subsurface X-ray."
         )
-        # Keep state synchronized if user toggles off manually
         if not launch_twin and st.session_state.get("force_twin_view", False):
             st.session_state["force_twin_view"] = False
     with c_tw2:

@@ -1,0 +1,9 @@
+# Git Attributes configuration
+# Explicitly treat binary files as binary to prevent CRLF conversions
+*.pdf binary
+*.docx binary
+*.db binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.ico binary
