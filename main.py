@@ -76,18 +76,33 @@ render_figma_navbar(active_view=st.session_state["nav_role"])
 # DATABASE DATA LOADER
 # -------------------------------------------------------------
 def load_data():
-    db_path = os.path.join(os.path.dirname(__file__), 'database', 'spatial_records.db')
-    conn = sqlite3.connect(db_path)
-    df = pd.read_sql_query("SELECT * FROM property_parcels", conn)
-    conn.close()
-    
+    db_dir = os.path.join(os.path.dirname(__file__), 'database')
+    os.makedirs(db_dir, exist_ok=True)
+    db_path = os.path.join(db_dir, 'spatial_records.db')
+
+    def read_df():
+        conn = sqlite3.connect(db_path)
+        try:
+            return pd.read_sql_query("SELECT * FROM property_parcels", conn)
+        finally:
+            conn.close()
+
+    if not os.path.exists(db_path):
+        from database.db_setup import initialize_db
+        initialize_db()
+
+    try:
+        df = read_df()
+    except Exception:
+        from database.db_setup import initialize_db
+        initialize_db()
+        df = read_df()
+
     if 'city' not in df.columns:
         from database.db_setup import initialize_db
         initialize_db()
-        conn = sqlite3.connect(db_path)
-        df = pd.read_sql_query("SELECT * FROM property_parcels", conn)
-        conn.close()
-        
+        df = read_df()
+
     return df
 
 try:
